@@ -139,5 +139,14 @@ class KhachHang {
 
         return false;
     }
+
+    public function countKhachHang() {
+        $query = "SELECT COUNT(*) as totalKhachHang FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['totalKhachHang'];
+    }
 }
 ?>

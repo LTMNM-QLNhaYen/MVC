@@ -19,7 +19,7 @@
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_SanPham.php">Sản phẩm</a>
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_ThongTinKhachHang.php">Khách hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_HangSanXuat.php">Hãng sản xuất</a>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_TinTuc.php">Tin tức</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/TinTuc_View.php">Tin tức</a>
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_DonHang.php">Đơn hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/NhanVien_View.php">Nhân viên</a>
 

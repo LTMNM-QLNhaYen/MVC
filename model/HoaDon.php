@@ -153,6 +153,24 @@ class HoaDon {
 
         return false;
     }
+
+    public function getTotalThanhTien() {
+        $query = "SELECT SUM(ThanhTien) as totalThanhTien FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['totalThanhTien'];
+    }
+
+    public function countHoaDon() {
+        $query = "SELECT COUNT(*) as totalHoaDon FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['totalHoaDon'];
+    }
 }
 ?>
 
