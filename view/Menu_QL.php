@@ -103,27 +103,7 @@
                     </svg>
                     </li>
                 </label>
-                <input class="radio" name="rad" id="choose2" type="radio" />
-                <label for="choose2">
-                    <li class="li">
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        height="24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        class="svg w-6 h-6 text-gray-800 dark:text-white"
-                    >
-                        <path
-                        d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke="currentColor"
-                        ></path>
-                    </svg>
-                    </li>
-                </label>
+               
                 <input class="radio" name="rad" id="choose3" type="radio" />
                 <label for="choose3">
                     <li class="li">

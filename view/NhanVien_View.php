@@ -358,7 +358,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th scope="col">Địa chỉ</th>
                     <th scope="col">SĐT</th>
                     <th scope="col">Trạng Thái</th>
-                    <th scope="col" class="col-2">Thao tác</th>
+                    <th scope="col"  class="col-2">Thao tác</th>
                 </tr>
                 </thead>
                 <tbody style="line-height: 40px; height: 40px;">
@@ -418,7 +418,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="hidden" name="MaNV" id="updateMaNV">
                     <div class="mb-3">
                         <label for="updateMaNVModal" class="form-label">Mã nhân viên</label>
-                        <input type="number" class="form-control" id="updateMaNVModal" name="MaNV" readonly="readonly">
+                        <input type="number" class="form-control" id="updateMaNVModal" name="MaNV" readonly>
                     </div>
           <div class="mb-3">
             <label for="updateTenNV" class="form-label">Tên NV</label>
