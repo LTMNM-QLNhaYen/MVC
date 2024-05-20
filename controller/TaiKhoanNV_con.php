@@ -1,53 +1,69 @@
 <?php
-require_once 'model/TaiKhoanNV.php';
+require_once("../model/DB.php");
+require_once("../model/TaiKhoanNV.php");
 
 class TaiKhoanNVController {
-    private $model;
+    private $db;
+    private $table_name = "TaiKhoanNV";
+
+    private $taiKhoanModel;
 
     public function __construct($db) {
-        $this->model = new TaiKhoanNV($db);
+        $this->db = $db;
+        $this->taiKhoanModel = new TaiKhoanNV($db);
     }
 
-    public function create($data) {
-        $this->model->UserName = $data['UserName'];
-        $this->model->MatKhau = $data['MatKhau'];
-        $this->model->MaNV = $data['MaNV'];
-        $this->model->MaQuyen = $data['MaQuyen'];
-        $this->model->TrangThai = $data['TrangThai'];
+    public function getAccountInfo($username) {
+        $accountInfo = $this->taiKhoanModel->getAccountByUsername($username);
+        return $accountInfo;
+    }
+    
+    public function create($UserName, $MatKhau, $MaNV, $MaQuyen, $TrangThai) {
+        $taiKhoanNV = new TaiKhoanNV($this->db);
 
-        if ($this->model->create()) {
-            return true;
-        }
+        $taiKhoanNV->UserName = $UserName;
+        $taiKhoanNV->MatKhau = $MatKhau;
+        $taiKhoanNV->MaNV = $MaNV;
+        $taiKhoanNV->MaQuyen = $MaQuyen;
+        $taiKhoanNV->TrangThai = $TrangThai;
 
-        return false;
+        return $taiKhoanNV->create();
     }
 
     public function read() {
-        return $this->model->read();
+        $taiKhoanNV = new TaiKhoanNV($this->db);
+        return $taiKhoanNV->read();
     }
 
-    public function update($data) {
-        $this->model->UserName = $data['UserName'];
-        $this->model->MatKhau = $data['MatKhau'];
-        $this->model->MaNV = $data['MaNV'];
-        $this->model->MaQuyen = $data['MaQuyen'];
-        $this->model->TrangThai = $data['TrangThai'];
+    public function update($UserName, $MatKhau, $MaNV, $MaQuyen, $TrangThai) {
+        $taiKhoanNV = new TaiKhoanNV($this->db);
 
-        if ($this->model->update()) {
-            return true;
+        $taiKhoanNV->UserName = $UserName;
+        $taiKhoanNV->MatKhau = $MatKhau;
+        $taiKhoanNV->MaNV = $MaNV;
+        $taiKhoanNV->MaQuyen = $MaQuyen;
+        $taiKhoanNV->TrangThai = $TrangThai;
+
+        return $taiKhoanNV->update();
+    }
+
+    public function delete($UserName) {
+        $taiKhoanNV = new TaiKhoanNV($this->db);
+        $taiKhoanNV->UserName = $UserName;
+        return $taiKhoanNV->delete();
+    }
+    public function Checklogin($UserName, $MatKhau) {
+        $taiKhoanNV = new TaiKhoanNV($this->db);
+        $result = $taiKhoanNV->checkLogin($UserName, $MatKhau);
+        if ($result) {
+            // Tài khoản hợp lệ, trả về thông tin của người dùng
+            return $result;
+        } else {
+            // Tài khoản không hợp lệ
+            return false;
         }
-
-        return false;
     }
-
-    public function delete($id) {
-        $this->model->UserName = $id;
-
-        if ($this->model->delete()) {
-            return true;
-        }
-
-        return false;
-    }
+ 
+    
 }
 ?>

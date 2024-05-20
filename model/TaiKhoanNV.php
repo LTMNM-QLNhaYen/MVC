@@ -8,7 +8,7 @@ class TaiKhoanNV {
     public $UserName;
     public $MatKhau;
     public $MaNV;
-    public $MaQuyen;
+    public $maquyen;
     public $TrangThai;
 
     public function __construct($db) {
@@ -16,96 +16,91 @@ class TaiKhoanNV {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table . "
-            SET
-                UserName = :UserName,
-                MatKhau = :MatKhau,
-                MaNV = :MaNV,
-                maquyen = :MaQuyen,
-                TrangThai = :TrangThai";
-
+        $query = "INSERT INTO " . $this->table . " SET UserName=:UserName, MatKhau=:MatKhau, MaNV=:MaNV, maquyen=:maquyen, TrangThai=:TrangThai";
         $stmt = $this->conn->prepare($query);
-
-        $this->UserName = htmlspecialchars(strip_tags($this->UserName));
-        $this->MatKhau = htmlspecialchars(strip_tags($this->MatKhau));
-        $this->MaNV = htmlspecialchars(strip_tags($this->MaNV));
-        $this->MaQuyen = htmlspecialchars(strip_tags($this->MaQuyen));
-        $this->TrangThai = htmlspecialchars(strip_tags($this->TrangThai));
-
+    
         $stmt->bindParam(':UserName', $this->UserName);
         $stmt->bindParam(':MatKhau', $this->MatKhau);
         $stmt->bindParam(':MaNV', $this->MaNV);
-        $stmt->bindParam(':MaQuyen', $this->MaQuyen);
+        $stmt->bindParam(':maquyen', $this->maquyen);
         $stmt->bindParam(':TrangThai', $this->TrangThai);
-
-        if ($stmt->execute()) {
-            return true;
+      
+        try {
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            // Handle the exception, log error, or return false
+            return false;
         }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
     }
 
     public function read() {
-        $query = "SELECT * FROM " . $this->table;
+        $sql = "SELECT UserName, MatKhau, MaNV, maquyen, TrangThai FROM TaiKhoanNV";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function readSingle() {
+        $query = "SELECT * FROM " . $this->table . " WHERE UserName = ? LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
-
+        $stmt->bindParam(1, $this->UserName);
         $stmt->execute();
 
-        return $stmt;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $this->UserName = $row['UserName'];
+            $this->MatKhau = $row['MatKhau'];
+            $this->MaNV = $row['MaNV'];
+            $this->maquyen = $row['maquyen'];
+            $this->TrangThai = $row['TrangThai'];
+        }
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table . "
-            SET
-                MatKhau = :MatKhau,
-                MaNV = :MaNV,
-                maquyen = :MaQuyen,
-                TrangThai = :TrangThai
-            WHERE
-                UserName = :UserName";
-
+        $query = "UPDATE " . $this->table . " SET MatKhau = :MatKhau, MaNV = :MaNV, maquyen = :maquyen, TrangThai = :TrangThai WHERE UserName = :UserName";
         $stmt = $this->conn->prepare($query);
 
-        $this->UserName = htmlspecialchars(strip_tags($this->UserName));
         $this->MatKhau = htmlspecialchars(strip_tags($this->MatKhau));
         $this->MaNV = htmlspecialchars(strip_tags($this->MaNV));
-        $this->MaQuyen = htmlspecialchars(strip_tags($this->MaQuyen));
+        $this->maquyen = htmlspecialchars(strip_tags($this->maquyen));
         $this->TrangThai = htmlspecialchars(strip_tags($this->TrangThai));
+        $this->UserName = htmlspecialchars(strip_tags($this->UserName));
 
-        $stmt->bindParam(':UserName', $this->UserName);
-        $stmt->bindParam(':MatKhau', $this->MatKhau);
-        $stmt->bindParam(':MaNV', $this->MaNV);
-        $stmt->bindParam(':MaQuyen', $this->MaQuyen);
-        $stmt->bindParam(':TrangThai', $this->TrangThai);
+        $stmt->bindParam(":MatKhau", $this->MatKhau);
+        $stmt->bindParam(":MaNV", $this->MaNV);
+        $stmt->bindParam(":maquyen", $this->maquyen);
+        $stmt->bindParam(":TrangThai", $this->TrangThai);
+        $stmt->bindParam(":UserName", $this->UserName);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function delete() {
         $query = "DELETE FROM " . $this->table . " WHERE UserName = :UserName";
-
         $stmt = $this->conn->prepare($query);
 
         $this->UserName = htmlspecialchars(strip_tags($this->UserName));
+        $stmt->bindParam(":UserName", $this->UserName);
 
-        $stmt->bindParam(':UserName', $this->UserName);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
+    public function checkLogin($UserName, $MatKhau) {
+        $query = "SELECT * FROM {$this->table} WHERE UserName = :UserName AND MatKhau = :MatKhau";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':UserName', $UserName);
+        $stmt->bindParam(':MatKhau', $MatKhau);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row;
+    }
+
+    public function getAccountByUsername($username) {
+        $query = "SELECT * FROM TaiKhoanNV WHERE Username = ?";
+        $stmt = $this->conn->prepare($query); // Thay đổi từ $this->db thành $this->conn
+        $stmt->bindParam(1, $username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
 }
 ?>
