@@ -384,8 +384,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="addTrangThai" class="form-label">Trạng Thái</label>
-                        <input type="text" class="form-control" id="addTrangThai" name="TrangThai" value="Không khoá">
-                    </div>
+                        <select class="form-select" id="addTrangThai" name="TrangThai">
+                            <option value="Không khoá">Không khoá</option>
+                            <option value="Khoá">Khoá</option>
+                        </select>                    </div>
                     <button type="submit" class="btn btn-primary vitri" name="add-btn">Thêm</button>
                 </form>
             </div>
@@ -414,15 +416,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
 
 <table class="table" style="width: 100%;" border="1">
     <tr style="text-align: center;">
-        <th scope="col">Mã khách hàng</th>
-        <th scope="col">Tên khách hàng</th>
+        <th scope="col">ID</th>
+        <th scope="col">Họ tên</th>
         <th scope="col">Phái</th>
         <th scope="col">Ngày Sinh</th>
         <th scope="col">Địa chỉ</th>
-        <th scope="col">Số điện thoại</th>
+        <th scope="col">SĐT</th>
         <th scope="col">UserName</th>
         <th scope="col">Email</th>
-        <th scope="col">Trạng Thái</th>
+      
         <th scope="col">Thao tác</th>
     </tr>
     <tbody style="line-height: 40px; height: 40px;">
@@ -436,7 +438,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                 <td><?php echo $kh['SDT']; ?></td>
                 <td><?php echo $kh['UserName']; ?></td>
                 <td><?php echo $kh['Email']; ?></td>
-                <td><?php echo $kh['TrangThai']; ?></td>
+               
                 <td style="width: 100%; display: flex; justify-content: flex-end; align-items: center;">
                     <button class="update-button update-btn" data-bs-toggle="modal" data-bs-target="#updateModal" 
                         data-id="<?php echo $kh['MaKH']; ?>" 
@@ -518,7 +520,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="updateTrangThai" class="form-label">Trạng Thái</label>
-                        <input type="text" class="form-control" id="updateTrangThai" name="TrangThai">
+                        <select class="form-select" id="updateTrangThai" name="TrangThai">
+                            <option value="Không khoá">Không khoá</option>
+                            <option value="Khoá">Khoá</option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary" name="update-btn">Cập Nhật</button>
                 </form>
