@@ -2,9 +2,7 @@
 require_once("DB.php");
 
 class HoaDon {
-    private $conn;
-    private $table = "HoaDon";
-
+    private $db;
     public $MaHD;
     public $MaKH;
     public $NgayLapHD;
@@ -19,38 +17,12 @@ class HoaDon {
     public $TrangThaiDonHang;
 
     public function __construct($db) {
-        $this->conn = $db;
+        $this->db = $db;
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table . "
-            SET
-                MaKH = :MaKH,
-                NgayLapHD = :NgayLapHD,
-                SoHoaDon = :SoHoaDon,
-                TenNguoiNhan = :TenNguoiNhan,
-                DiaChi = :DiaChi,
-                SDT = :SDT,
-                Email = :Email,
-                ThanhTien = :ThanhTien,
-                GhiChu = :GhiChu,
-                TrangThai = :TrangThai,
-                TrangThaiDonHang = :TrangThaiDonHang";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->MaKH = htmlspecialchars(strip_tags($this->MaKH));
-        $this->NgayLapHD = htmlspecialchars(strip_tags($this->NgayLapHD));
-        $this->SoHoaDon = htmlspecialchars(strip_tags($this->SoHoaDon));
-        $this->TenNguoiNhan = htmlspecialchars(strip_tags($this->TenNguoiNhan));
-        $this->DiaChi = htmlspecialchars(strip_tags($this->DiaChi));
-        $this->SDT = htmlspecialchars(strip_tags($this->SDT));
-        $this->Email = htmlspecialchars(strip_tags($this->Email));
-        $this->ThanhTien = htmlspecialchars(strip_tags($this->ThanhTien));
-        $this->GhiChu = htmlspecialchars(strip_tags($this->GhiChu));
-        $this->TrangThai = htmlspecialchars(strip_tags($this->TrangThai));
-        $this->TrangThaiDonHang = htmlspecialchars(strip_tags($this->TrangThaiDonHang));
-
+        $sql = "INSERT INTO HoaDon (MaKH, NgayLapHD, SoHoaDon, TenNguoiNhan, DiaChi, SDT, Email, ThanhTien, GhiChu, TrangThai, TrangThaiDonHang) VALUES (:MaKH, :NgayLapHD, :SoHoaDon, :TenNguoiNhan, :DiaChi, :SDT, :Email, :ThanhTien, :GhiChu, :TrangThai, :TrangThaiDonHang)";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaKH', $this->MaKH);
         $stmt->bindParam(':NgayLapHD', $this->NgayLapHD);
         $stmt->bindParam(':SoHoaDon', $this->SoHoaDon);
@@ -63,57 +35,41 @@ class HoaDon {
         $stmt->bindParam(':TrangThai', $this->TrangThai);
         $stmt->bindParam(':TrangThaiDonHang', $this->TrangThaiDonHang);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function read() {
-        $query = "SELECT * FROM " . $this->table;
-
-        $stmt = $this->conn->prepare($query);
-
+        $sql = "SELECT * FROM HoaDon";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        return $stmt;
+    public function readSingle() {
+        $sql = "SELECT * FROM HoaDon WHERE MaHD = :MaHD";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':MaHD', $this->MaHD);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->MaKH = $row['MaKH'];
+            $this->NgayLapHD = $row['NgayLapHD'];
+            $this->SoHoaDon = $row['SoHoaDon'];
+            $this->TenNguoiNhan = $row['TenNguoiNhan'];
+            $this->DiaChi = $row['DiaChi'];
+            $this->SDT = $row['SDT'];
+            $this->Email = $row['Email'];
+            $this->ThanhTien = $row['ThanhTien'];
+            $this->GhiChu = $row['GhiChu'];
+            $this->TrangThai = $row['TrangThai'];
+            $this->TrangThaiDonHang = $row['TrangThaiDonHang'];
+        }
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table . "
-            SET
-                MaKH = :MaKH,
-                NgayLapHD = :NgayLapHD,
-                SoHoaDon = :SoHoaDon,
-                TenNguoiNhan = :TenNguoiNhan,
-                DiaChi = :DiaChi,
-                SDT = :SDT,
-                Email = :Email,
-                ThanhTien = :ThanhTien,
-                GhiChu = :GhiChu,
-                TrangThai = :TrangThai,
-                TrangThaiDonHang = :TrangThaiDonHang
-            WHERE
-                MaHD = :MaHD";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->MaHD = htmlspecialchars(strip_tags($this->MaHD));
-        $this->MaKH = htmlspecialchars(strip_tags($this->MaKH));
-        $this->NgayLapHD = htmlspecialchars(strip_tags($this->NgayLapHD));
-        $this->SoHoaDon = htmlspecialchars(strip_tags($this->SoHoaDon));
-        $this->TenNguoiNhan = htmlspecialchars(strip_tags($this->TenNguoiNhan));
-        $this->DiaChi = htmlspecialchars(strip_tags($this->DiaChi));
-        $this->SDT = htmlspecialchars(strip_tags($this->SDT));
-        $this->Email = htmlspecialchars(strip_tags($this->Email));
-        $this->ThanhTien = htmlspecialchars(strip_tags($this->ThanhTien));
-        $this->GhiChu = htmlspecialchars(strip_tags($this->GhiChu));
-        $this->TrangThai = htmlspecialchars(strip_tags($this->TrangThai));
-        $this->TrangThaiDonHang = htmlspecialchars(strip_tags($this->TrangThaiDonHang));
-
+        $sql = "UPDATE HoaDon SET MaKH = :MaKH, NgayLapHD = :NgayLapHD, SoHoaDon = :SoHoaDon, TenNguoiNhan = :TenNguoiNhan, DiaChi = :DiaChi, SDT = :SDT, Email = :Email, ThanhTien = :ThanhTien, GhiChu = :GhiChu, TrangThai = :TrangThai, TrangThaiDonHang = :TrangThaiDonHang WHERE MaHD = :MaHD";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaHD', $this->MaHD);
         $stmt->bindParam(':MaKH', $this->MaKH);
         $stmt->bindParam(':NgayLapHD', $this->NgayLapHD);
@@ -127,31 +83,15 @@ class HoaDon {
         $stmt->bindParam(':TrangThai', $this->TrangThai);
         $stmt->bindParam(':TrangThaiDonHang', $this->TrangThaiDonHang);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function delete() {
-        $query = "DELETE FROM " . $this->table . " WHERE MaHD = :MaHD";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->MaHD = htmlspecialchars(strip_tags($this->MaHD));
-
+        $sql = "DELETE FROM HoaDon WHERE MaHD = :MaHD";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaHD', $this->MaHD);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function getTotalThanhTien() {
@@ -171,6 +111,64 @@ class HoaDon {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['totalHoaDon'];
     }
+
+
+    public function getAllAscendingByDate() {
+        $sql = "SELECT * FROM HoaDon ORDER BY NgayLapHD ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllDescendingByDate() {
+        $sql = "SELECT * FROM HoaDon ORDER BY NgayLapHD DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchByTenNguoiNhan($tenNguoiNhan) {
+        $sql = "SELECT * FROM HoaDon WHERE TenNguoiNhan LIKE :tenNguoiNhan";
+        $stmt = $this->db->prepare($sql);
+        $tenNguoiNhan = "%$tenNguoiNhan%";
+        $stmt->bindParam(':tenNguoiNhan', $tenNguoiNhan);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getByTrangThaiDonHang($trangThaiDonHang) {
+        $sql = "SELECT * FROM HoaDon WHERE TrangThaiDonHang = :trangThaiDonHang";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':trangThaiDonHang', $trangThaiDonHang);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getByTrangThai($trangThai) {
+        $sql = "SELECT * FROM HoaDon WHERE TrangThai = :trangThai";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':trangThai', $trangThai, PDO::PARAM_INT); // Đảm bảo truyền vào kiểu INT
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getByMaHoaDon($maHD) {
+        $sql = "SELECT * FROM ChiTietHoaDon WHERE MaHD = :maHD";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':maHD', $maHD);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function xacNhanHoaDon($maHD, $maNV) {
+        $ngayXacNhan = date('Y-m-d H:i:s');
+        $sql = "INSERT INTO XacNhanHoaDon (MaHD, MaNV, NgayXacNhan) VALUES (:maHD, :maNV, :ngayXacNhan)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':maHD', $maHD);
+        $stmt->bindParam(':maNV', $maNV);
+        $stmt->bindParam(':ngayXacNhan', $ngayXacNhan);
+
+        return $stmt->execute();
+    }
+
 }
 ?>
 

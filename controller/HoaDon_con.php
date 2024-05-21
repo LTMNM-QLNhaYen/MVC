@@ -1,66 +1,104 @@
 <?php
-require_once 'model/HoaDon.php';
+require_once("../model/DB.php");
+require_once("../model/HoaDon.php");
+
 
 class HoaDonController {
-    private $model;
+    private $db;
+    private $table_name = "HoaDon";
 
     public function __construct($db) {
-        $this->model = new HoaDon($db);
+        $this->db = $db;
     }
 
     public function create($data) {
-        $this->model->MaKH = $data['MaKH'];
-        $this->model->NgayLapHD = $data['NgayLapHD'];
-        $this->model->SoHoaDon = $data['SoHoaDon'];
-        $this->model->TenNguoiNhan = $data['TenNguoiNhan'];
-        $this->model->DiaChi = $data['DiaChi'];
-        $this->model->SDT = $data['SDT'];
-        $this->model->Email = $data['Email'];
-        $this->model->ThanhTien = $data['ThanhTien'];
-        $this->model->GhiChu = $data['GhiChu'];
-        $this->model->TrangThai = $data['TrangThai'];
-        $this->model->TrangThaiDonHang = $data['TrangThaiDonHang'];
+        $hoaDon = new HoaDon($this->db);
+        
+        $hoaDon->MaKH = $data['MaKH'];
+        $hoaDon->NgayLapHD = $data['NgayLapHD'];
+        $hoaDon->SoHoaDon = $data['SoHoaDon'];
+        $hoaDon->TenNguoiNhan = $data['TenNguoiNhan'];
+        $hoaDon->DiaChi = $data['DiaChi'];
+        $hoaDon->SDT = $data['SDT'];
+        $hoaDon->Email = $data['Email'];
+        $hoaDon->ThanhTien = $data['ThanhTien'];
+        $hoaDon->GhiChu = $data['GhiChu'];
+        $hoaDon->TrangThai = $data['TrangThai'];
+        $hoaDon->TrangThaiDonHang = $data['TrangThaiDonHang'];
 
-        if ($this->model->create()) {
-            return true;
-        }
-
-        return false;
+        return $hoaDon->create();
     }
 
     public function read() {
-        return $this->model->read();
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->read();
+    }
+
+    public function readSingle($MaHD) {
+        $hoaDon = new HoaDon($this->db);
+        $hoaDon->MaHD = $MaHD;
+        $hoaDon->readSingle();
+        return $hoaDon;
     }
 
     public function update($data) {
-        $this->model->MaHD = $data['MaHD'];
-        $this->model->MaKH = $data['MaKH'];
-        $this->model->NgayLapHD = $data['NgayLapHD'];
-        $this->model->SoHoaDon = $data['SoHoaDon'];
-        $this->model->TenNguoiNhan = $data['TenNguoiNhan'];
-        $this->model->DiaChi = $data['DiaChi'];
-        $this->model->SDT = $data['SDT'];
-        $this->model->Email = $data['Email'];
-        $this->model->ThanhTien = $data['ThanhTien'];
-        $this->model->GhiChu = $data['GhiChu'];
-        $this->model->TrangThai = $data['TrangThai'];
-        $this->model->TrangThaiDonHang = $data['TrangThaiDonHang'];
+        $hoaDon = new HoaDon($this->db);
+        
+        $hoaDon->MaHD = $data['MaHD'];
+        $hoaDon->MaKH = $data['MaKH'];
+        $hoaDon->NgayLapHD = $data['NgayLapHD'];
+        $hoaDon->SoHoaDon = $data['SoHoaDon'];
+        $hoaDon->TenNguoiNhan = $data['TenNguoiNhan'];
+        $hoaDon->DiaChi = $data['DiaChi'];
+        $hoaDon->SDT = $data['SDT'];
+        $hoaDon->Email = $data['Email'];
+        $hoaDon->ThanhTien = $data['ThanhTien'];
+        $hoaDon->GhiChu = $data['GhiChu'];
+        $hoaDon->TrangThai = $data['TrangThai'];
+        $hoaDon->TrangThaiDonHang = $data['TrangThaiDonHang'];
 
-        if ($this->model->update()) {
-            return true;
-        }
-
-        return false;
+        return $hoaDon->update();
     }
 
-    public function delete($id) {
-        $this->model->MaHD = $id;
+    public function delete($MaHD) {
+        $hoaDon = new HoaDon($this->db);
+        $hoaDon->MaHD = $MaHD;
+        return $hoaDon->delete();
+    }
 
-        if ($this->model->delete()) {
-            return true;
-        }
+    public function getAllAscendingByDate() {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->getAllAscendingByDate();
+    }
 
-        return false;
+    public function getAllDescendingByDate() {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->getAllDescendingByDate();
+    }
+
+    public function searchByTenNguoiNhan($tenNguoiNhan) {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->searchByTenNguoiNhan($tenNguoiNhan);
+    }
+
+    public function getByTrangThaiDonHang($trangThaiDonHang) {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->getByTrangThaiDonHang($trangThaiDonHang);
+    }
+
+    public function getByTrangThai($trangThai) {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->getByTrangThai($trangThai);
+    }
+
+    public function getByMaHoaDon($maHD) {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->getByMaHoaDon($maHD);
+    }
+
+    public function xacNhanHoaDon($maHD, $maNV) {
+        $hoaDon = new HoaDon($this->db);
+        return $hoaDon->xacNhanHoaDon($maHD, $maNV);
     }
 }
 ?>
