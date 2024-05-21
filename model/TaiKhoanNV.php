@@ -101,6 +101,50 @@ class TaiKhoanNV {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+    public function searchByUsername($username) {
+        $query = "SELECT * FROM " . $this->table . " WHERE UserName LIKE ?";
+        $stmt = $this->conn->prepare($query);
+        $username = "%{$username}%";
+        $stmt->bindParam(1, $username);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllAscending() {
+        $query = "SELECT * FROM " . $this->table . " ORDER BY UserName ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllDescending() {
+        $query = "SELECT * FROM " . $this->table . " ORDER BY UserName DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getEmployeesWithoutAccount() {
+        $query = "SELECT * FROM NhanVien WHERE MaNV NOT IN (SELECT MaNV FROM TaiKhoanNV)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function update1($data) {
+        $sql = "UPDATE taikhoannv SET MatKhau = :MatKhau, TrangThai = :TrangThai WHERE UserName = :UserName";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':MatKhau', $data['MatKhau']);
+        $stmt->bindParam(':TrangThai', $data['TrangThai']);
+        $stmt->bindParam(':UserName', $data['UserName']);
+        return $stmt->execute();
+    }
+
+
+    public function getByUserName1($UserName) {
+        $sql = "SELECT * FROM taikhoannv WHERE UserName = :UserName";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':UserName', $UserName);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

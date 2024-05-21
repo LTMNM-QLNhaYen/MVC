@@ -18,34 +18,35 @@ class TaiKhoanNVController {
         return $accountInfo;
     }
     
-    public function create($UserName, $MatKhau, $MaNV, $MaQuyen, $TrangThai) {
+    public function create($data) {
         $taiKhoanNV = new TaiKhoanNV($this->db);
-
-        $taiKhoanNV->UserName = $UserName;
-        $taiKhoanNV->MatKhau = $MatKhau;
-        $taiKhoanNV->MaNV = $MaNV;
-        $taiKhoanNV->MaQuyen = $MaQuyen;
-        $taiKhoanNV->TrangThai = $TrangThai;
-
+    
+        $taiKhoanNV->UserName = $data['UserName'];
+        $taiKhoanNV->MatKhau = $data['MatKhau'];
+        $taiKhoanNV->MaNV = $data['MaNV'];
+        $taiKhoanNV->maquyen = $data['maquyen'];
+        $taiKhoanNV->TrangThai = $data['TrangThai'];
+    
         return $taiKhoanNV->create();
     }
-
+    
     public function read() {
         $taiKhoanNV = new TaiKhoanNV($this->db);
         return $taiKhoanNV->read();
     }
 
-    public function update($UserName, $MatKhau, $MaNV, $MaQuyen, $TrangThai) {
+    public function update($data) {
         $taiKhoanNV = new TaiKhoanNV($this->db);
-
-        $taiKhoanNV->UserName = $UserName;
-        $taiKhoanNV->MatKhau = $MatKhau;
-        $taiKhoanNV->MaNV = $MaNV;
-        $taiKhoanNV->MaQuyen = $MaQuyen;
-        $taiKhoanNV->TrangThai = $TrangThai;
-
+    
+        $taiKhoanNV->UserName = $data['UserName'];
+        $taiKhoanNV->MatKhau = $data['MatKhau'];
+        $taiKhoanNV->MaNV = $data['MaNV'];
+        $taiKhoanNV->maquyen = $data['maquyen'];
+        $taiKhoanNV->TrangThai = $data['TrangThai'];
+    
         return $taiKhoanNV->update();
     }
+    
 
     public function delete($UserName) {
         $taiKhoanNV = new TaiKhoanNV($this->db);
@@ -63,7 +64,30 @@ class TaiKhoanNVController {
             return false;
         }
     }
- 
+    public function searchByUserName($UserName) {
+        return $this->taiKhoanModel->searchByUserName($UserName);
+    }
+
+    public function getAllAscending() {
+        return $this->taiKhoanModel->getAllAscending();
+    }
+
+    public function getAllDescending() {
+        return $this->taiKhoanModel->getAllDescending();
+    }
+    public function getEmployeesWithoutAccount() {
+        // Gọi phương thức tương ứng từ model TaiKhoanNV
+        return $this->taiKhoanModel->getEmployeesWithoutAccount();
+    } 
+
+    public function update1($data) {
+        return $this->taiKhoanModel->update($data);
+    }
+
+    public function getByUserName1($UserName) {
+        return $this->taiKhoanModel->getByUserName1($UserName);
+    }
+
     
 }
 ?>

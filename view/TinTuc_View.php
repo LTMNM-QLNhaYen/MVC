@@ -285,8 +285,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
       <div class="row">
         <div id="menu"></div>
       </div>
+
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
+        
         <div class="col-2">
           <div id="sidebar"></div>
         </div>

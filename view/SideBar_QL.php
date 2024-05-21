@@ -25,8 +25,8 @@
 
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_NhapHang.php">Nhập hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_DatHang.php"  >Đặt hàng</a>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_Taikhoan.php">Tài khoản</a>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_ThongKe.php">Thống kê</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/TaiKhoanNV_View.php">Tài khoản</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/ThongKe_View.php">Thống kê</a>
     </ul>
     </div>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">

@@ -1,4 +1,3 @@
-
 <!doctype html PUBLIC "-//W3C//DTD HMTL 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
   <head>
@@ -62,6 +61,11 @@
   color: #33CCFF;
   fill-rule: evenodd;
 }
+
+        .li {
+            list-style-type: none;
+            cursor: pointer;
+        }
 
     </style>
   </head>
@@ -127,7 +131,7 @@
                     </li>
                 </label>
                 <input class="radio" name="rad" id="choose4" type="radio" />
-                <label for="choose4">
+                <label for="choose4" onclick="redirectToPage()">
                     <li class="li">
                     <svg
                         viewBox="0 0 24 24"
@@ -169,6 +173,18 @@
   </div>   
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+<script>
+        function redirectToPage() {
+            window.location.href = '../view/ThongTinCaNhanTK_View.php'; // Thay 'your_target_page.html' bằng đường dẫn thực tế của bạn
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('choose4').addEventListener('change', function () {
+                if (this.checked) {
+                    redirectToPage();
+                }
+            });
+        });
+    </script>
   </body>
 </html>
