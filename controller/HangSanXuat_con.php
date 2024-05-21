@@ -1,5 +1,5 @@
 <?php
-require_once 'model/HangSanXuat.php';
+require_once '../model/HangSanXuat.php';
 
 class HangSanXuatController {
     private $model;
@@ -12,16 +12,39 @@ class HangSanXuatController {
         $this->model->TenHSX = $data['TenHSX'];
         $this->model->DiaChi = $data['DiaChi'];
         $this->model->SDT = $data['SDT'];
-
-        if ($this->model->create()) {
-            return true;
-        }
-
-        return false;
+        return $this->model->create();
     }
 
     public function read() {
         return $this->model->read();
+    }
+
+    public function searchByTenHSX($tenHSX) {
+        return $this->model->searchByTenHSX($tenHSX);
+    }
+
+    public function getAllAscending() {
+        return $this->model->getAllAscending();
+    }
+
+    public function getAllDescending() {
+        return $this->model->getAllDescending();
+    }
+
+    public function readSingle($id) {
+        $this->model->MaHSX = $id;
+        $this->model->readSingle();
+        if ($this->model->TenHSX) {
+            $item = [
+                "MaHSX" => $this->model->MaHSX,
+                "TenHSX" => $this->model->TenHSX,
+                "DiaChi" => $this->model->DiaChi,
+                "SDT" => $this->model->SDT
+            ];
+            return json_encode($item);
+        } else {
+            return json_encode(["message" => "Record not found."]);
+        }
     }
 
     public function update($data) {
@@ -31,20 +54,19 @@ class HangSanXuatController {
         $this->model->SDT = $data['SDT'];
 
         if ($this->model->update()) {
-            return true;
+            return json_encode(["message" => "Record updated successfully."]);
+        } else {
+            return json_encode(["message" => "Failed to update record."]);
         }
-
-        return false;
     }
 
     public function delete($id) {
         $this->model->MaHSX = $id;
-
         if ($this->model->delete()) {
-            return true;
+            return json_encode(["message" => "Record deleted successfully."]);
+        } else {
+            return json_encode(["message" => "Failed to delete record."]);
         }
-
-        return false;
     }
 }
 ?>

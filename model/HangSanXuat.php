@@ -1,101 +1,94 @@
 <?php
+
 require_once("DB.php");
-
+ 
 class HangSanXuat {
-    private $conn;
-    private $table = "HangSanXuat";
-
+    private $db;
     public $MaHSX;
     public $TenHSX;
     public $DiaChi;
     public $SDT;
 
     public function __construct($db) {
-        $this->conn = $db;
+        $this->db = $db;
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table . "
-            SET
-                TenHSX = :TenHSX,
-                DiaChi = :DiaChi,
-                SDT = :SDT";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->TenHSX = htmlspecialchars(strip_tags($this->TenHSX));
-        $this->DiaChi = htmlspecialchars(strip_tags($this->DiaChi));
-        $this->SDT = htmlspecialchars(strip_tags($this->SDT));
-
+        $sql = "INSERT INTO HangSanXuat (TenHSX, DiaChi, SDT) VALUES (:TenHSX, :DiaChi, :SDT)";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':TenHSX', $this->TenHSX);
         $stmt->bindParam(':DiaChi', $this->DiaChi);
         $stmt->bindParam(':SDT', $this->SDT);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function read() {
-        $query = "SELECT * FROM " . $this->table;
-
-        $stmt = $this->conn->prepare($query);
-
+        $sql = "SELECT * FROM HangSanXuat";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        return $stmt;
+    public function readSingle() {
+        $sql = "SELECT * FROM HangSanXuat WHERE MaHSX = :MaHSX";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':MaHSX', $this->MaHSX);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->TenHSX = $row['TenHSX'];
+            $this->DiaChi = $row['DiaChi'];
+            $this->SDT = $row['SDT'];
+        }
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table . "
-            SET
-                TenHSX = :TenHSX,
-                DiaChi = :DiaChi,
-                SDT = :SDT
-            WHERE
-                MaHSX = :MaHSX";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->MaHSX = htmlspecialchars(strip_tags($this->MaHSX));
-        $this->TenHSX = htmlspecialchars(strip_tags($this->TenHSX));
-        $this->DiaChi = htmlspecialchars(strip_tags($this->DiaChi));
-        $this->SDT = htmlspecialchars(strip_tags($this->SDT));
-
+        $sql = "UPDATE HangSanXuat SET TenHSX = :TenHSX, DiaChi = :DiaChi, SDT = :SDT WHERE MaHSX = :MaHSX";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaHSX', $this->MaHSX);
         $stmt->bindParam(':TenHSX', $this->TenHSX);
         $stmt->bindParam(':DiaChi', $this->DiaChi);
         $stmt->bindParam(':SDT', $this->SDT);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
 
     public function delete() {
-        $query = "DELETE FROM " . $this->table . " WHERE MaHSX = :MaHSX";
-
-        $stmt = $this->conn->prepare($query);
-
-        $this->MaHSX = htmlspecialchars(strip_tags($this->MaHSX));
-
+        $sql = "DELETE FROM HangSanXuat WHERE MaHSX = :MaHSX";
+        $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaHSX', $this->MaHSX);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        printf("Error: %s.\n", $stmt->error);
-
-        return false;
+        return $stmt->execute();
     }
+
+   
+
+   
+  
+    public function searchByTenHSX($tenHSX) {
+        $sql = "SELECT * FROM HangSanXuat WHERE TenHSX LIKE :tenHSX";
+        $stmt = $this->db->prepare($sql);
+        $tenHSX = "%$tenHSX%";
+        $stmt->bindParam(':tenHSX', $tenHSX);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllAscending() {
+        $sql = "SELECT * FROM HangSanXuat ORDER BY MaHSX ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllDescending() {
+        $sql = "SELECT * FROM HangSanXuat ORDER BY MaHSX DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 ?>

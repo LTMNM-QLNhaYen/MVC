@@ -1,4 +1,6 @@
 <?php
+require_once("DB.php");
+ 
 class TinTuc {
     private $db;
     public $MaTin;
