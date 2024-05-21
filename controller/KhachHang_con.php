@@ -16,15 +16,9 @@ class KhachHangController {
         $this->model->SDT = $data['SDT'];
         $this->model->UserName = $data['UserName'];
         $this->model->MatKhau = $data['MatKhau'];
-       
         $this->model->Email = $data['Email'];
         $this->model->TrangThai = $data['TrangThai'];
-
-        if ($this->model->create()) {
-            return true;
-        }
-
-        return false;
+        return $this->model->create();
     }
 
     public function read() {
@@ -42,22 +36,24 @@ class KhachHangController {
         $this->model->MatKhau = $data['MatKhau'];
         $this->model->Email = $data['Email'];
         $this->model->TrangThai = $data['TrangThai'];
-
-        if ($this->model->update()) {
-            return true;
-        }
-
-        return false;
+        return $this->model->update();
     }
 
-    public function delete($id) {
-        $this->model->MaKH = $id;
+    public function delete($MaKH) {
+        $this->model->MaKH = $MaKH;
+        return $this->model->delete();
+    }
 
-        if ($this->model->delete()) {
-            return true;
-        }
+    public function searchByName($tenKH) {
+        return $this->model->searchByName($tenKH);
+    }
 
-        return false;
+    public function getAllAscending() {
+        return $this->model->getAllAscending();
+    }
+
+    public function getAllDescending() {
+        return $this->model->getAllDescending();
     }
 }
 ?>
