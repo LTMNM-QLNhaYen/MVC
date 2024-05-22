@@ -18,8 +18,10 @@ class HoaDon {
 
     public function __construct($db) {
         $this->db = $db;
+        $this->conn = $this->db->getConnection(); // Gán giá trị cho thuộc tính $conn
     }
-
+    
+    
     public function create() {
         $sql = "INSERT INTO HoaDon (MaKH, NgayLapHD, SoHoaDon, TenNguoiNhan, DiaChi, SDT, Email, ThanhTien, GhiChu, TrangThai, TrangThaiDonHang) VALUES (:MaKH, :NgayLapHD, :SoHoaDon, :TenNguoiNhan, :DiaChi, :SDT, :Email, :ThanhTien, :GhiChu, :TrangThai, :TrangThaiDonHang)";
         $stmt = $this->db->prepare($sql);
@@ -95,7 +97,7 @@ class HoaDon {
     }
 
     public function getTotalThanhTien() {
-        $query = "SELECT SUM(ThanhTien) as totalThanhTien FROM " . $this->table;
+        $query = "SELECT SUM(ThanhTien) as totalThanhTien FROM  HoaDon ";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
@@ -104,7 +106,7 @@ class HoaDon {
     }
 
     public function countHoaDon() {
-        $query = "SELECT COUNT(*) as totalHoaDon FROM " . $this->table;
+        $query = "SELECT COUNT(*) as totalHoaDon FROM HoaDon " ;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 

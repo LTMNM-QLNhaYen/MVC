@@ -8,6 +8,20 @@ require_once("../controller/SanPham_con.php");
 
 $conn = new DB();
 
+include_once '../controller/TaiKhoanNV_con.php';
+$taiKhoanController = new TaiKhoanNVController($conn);
+session_start();
+$UserName = $_SESSION['UserName']; 
+
+if (!isset($_SESSION['UserName'])) {
+  // Nếu không đăng nhập, chuyển hướng đến trang đăng nhập
+  header("Location: Login_Admin.php");
+  exit(); // Dừng kịch bản để chuyển hướng được thực hiện
+}
+
+//Thong tin user
+$accountInfo = $taiKhoanController->getAccountInfo($UserName);
+
 $sql_phieudat = "SELECT pd.MaPhieuDat AS MaPhieuDat , pd.NgayLap  AS NgayLap , pd.TrangThai  AS TrangThai, pd.MaHSX  AS MaHSX , hsx.TenHSX  AS TenHSX 
                  FROM phieudat pd
                  JOIN hangsanxuat hsx ON pd.MaHSX = hsx.MaHSX";
@@ -106,6 +120,185 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" type="text/css" href="style.css">
 <style>
 
+#btn-message {
+  --text-color: #000;
+  --bg-color-sup: #d2d2d2;
+  --bg-color: #f4f4f4;
+  --bg-hover-color: #ffffff;
+  --online-status: #00da00;
+  --font-size: 16px;
+  --btn-transition: all 0.2s ease-out;
+}
+
+.button-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 400 var(--font-size) Helvetica Neue, sans-serif;
+  box-shadow: 0 0 2.17382px rgba(0,0,0,.049),0 1.75px 6.01034px rgba(0,0,0,.07),0 3.63px 14.4706px rgba(0,0,0,.091),0 22px 48px rgba(0,0,0,.14);
+  background-color: var(--bg-color);
+  border-radius: 68px;
+  cursor: pointer;
+  padding: 6px 10px 6px 6px;
+  width: fit-content;
+  height: 40px;
+  border: 0;
+  overflow: hidden;
+  position: relative;
+  transition: var(--btn-transition);
+}
+
+.button-message:hover {
+  height: 56px;
+  padding: 8px 20px 8px 8px;
+  background-color: var(--bg-hover-color);
+  transition: var(--btn-transition);
+}
+
+.button-message:active {
+  transform: scale(0.99);
+}
+
+.content-avatar {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  transition: var(--btn-transition);
+  position: relative;
+}
+
+.button-message:hover .content-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-color-sup);
+}
+
+.user-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-user {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  right: 1px;
+  bottom: 1px;
+  border-radius: 50%;
+  outline: solid 2px var(--bg-color);
+  background-color: var(--online-status);
+  transition: var(--btn-transition);
+  animation: active-status 2s ease-in-out infinite;
+}
+
+.button-message:hover .status-user {
+  width: 10px;
+  height: 10px;
+  right: 1px;
+  bottom: 1px;
+  outline: solid 3px var(--bg-hover-color);
+}
+
+.notice-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 8px;
+  text-align: initial;
+  color: var(--text-color);
+}
+
+.username {
+  letter-spacing: -6px;
+  height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: var(--btn-transition);
+}
+
+.user-id {
+  font-size: 12px;
+  letter-spacing: -6px;
+  height: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: var(--btn-transition);
+}
+
+.lable-message {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  transform: scaleY(1);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .username {
+  height: auto;
+  letter-spacing: normal;
+  opacity: 1;
+  transform: translateY(0);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .user-id {
+  height: auto;
+  letter-spacing: normal;
+  opacity: 1;
+  transform: translateY(0);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .lable-message {
+  height: 0;
+  transform: scaleY(0);
+  transition: var(--btn-transition);
+}
+
+.lable-message, .username {
+  font-weight: 600;
+}
+
+.number-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-left: 8px;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--bg-color-sup);
+  border-radius: 20px;
+}
+
+/*==============================================*/
+@keyframes active-status {
+  0% {
+    background-color: var(--online-status);
+  }
+
+  33.33% {
+    background-color: #93e200;
+  }
+
+  66.33% {
+    background-color: #93e200;
+  }
+
+  100% {
+    background-color: var(--online-status);
+  }
+}
 .cta {
   align-items: center;
   appearance: none;
@@ -174,6 +367,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       
         <div class="col-10" style="padding: 20px 20px 20px 10px;">
+        <div class="row" style="height:40px">
+    <div class="col-10"><div id="btn-message" class="button-message">
+            <div class="content-avatar">
+                <div class="status-user"></div>
+                <div class="avatar">
+                    <svg class="user-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12,12.5c-3.04,0-5.5,1.73-5.5,3.5s2.46,3.5,5.5,3.5,5.5-1.73,5.5-3.5-2.46-3.5-5.5-3.5Zm0-.5c1.66,0,3-1.34,3-3s-1.34-3-3-3-3,1.34-3,3,1.34,3,3,3Z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="notice-content">
+                <div class="username"><?php echo $UserName ?></div>
+                <div class="lable-message"><?php echo $accountInfo['maquyen']?><span class="number-message"></span></div>
+                <div class="user-id">ID: <?php echo $accountInfo['MaNV']?></div>
+            </div>
+        </div></div>
+        <div class="col-2"><form method="post" action="logout.php">
+            <button type="submit" class="btn btn-primary">Đăng xuất</button>
+        </form></div>
+    
+
+
+    </div>
+    <h1>Quản lý đặt hàng</h1>
 
         <div class="row">
         <div class="navbar bg-body-tertiary" style="border-radius: 10px;">
@@ -230,44 +447,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     ?>
     <tr style="font-size: 12px;">
-    <td><?php echo $pd['MaPhieuDat']; ?></td>
-    <td><?php echo $pd['NgayLap']; ?></td>
-    
-    <td><?php echo $pd['TrangThai']; ?></td>
-    <td><?php echo $pd['TenHSX']; ?></td>
-    <td>
-      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-       
+        <td><?php echo $pd['MaPhieuDat']; ?></td>
+        <td><?php echo $pd['NgayLap']; ?></td>
+        <td><?php echo $pd['TrangThai']; ?></td>
+        <td><?php echo $pd['TenHSX']; ?></td>
+        <td>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                Xem chi tiết
+            </button>
+        </td>
+    </tr>
+    <!-- Offcanvas for each PhieuDat -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Mã phiếu đặt: <?php echo $pd['MaPhieuDat']; ?></p>
+            <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></p>
+            <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></p>
+            <?php
+            // Câu truy vấn SQL để lấy chi tiết phiếu đặt
+            $sql_chitiet = "SELECT sp.TenSP, ctpd.SoLuong FROM chitietphieudat ctpd INNER JOIN sanpham sp ON ctpd.MaSanPham = sp.MaSP WHERE ctpd.MaPhieuDat = :MaPhieuDat";
+            $stmt_chitiet = $conn->prepare($sql_chitiet);
+            $stmt_chitiet->bindParam(':MaPhieuDat', $pd['MaPhieuDat']);
+            $stmt_chitiet->execute();
+            $chitietphieudat = $stmt_chitiet->fetchAll();
 
-
-  <button class="btn btn-outline-primary" type="button" name="btn_chitiet"value="<?php echo $pd['MaPhieuDat']; ?>"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-    </svg>
-   </button>
-   </form>
-   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-              <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="offcanvas-body">
-                  <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                  <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></span></p> 
-                  <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></span></p>           
-                  <?php 
-                  foreach($chitietphieudat as $ctsp)
-                  {
-                  ?>
-                  
-                  <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                  <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                  <?php
-                  }
-                  ?>
-              </div>
-          </div>
+            if ($stmt_chitiet->rowCount() > 0) {
+                foreach ($chitietphieudat as $ctpd) {
+                    ?>
+                    <p>Tên sản phẩm: <?php echo $ctpd['TenSP']; ?></p>
+                    <p>Số lượng: <?php echo $ctpd['SoLuong']; ?></p>
+                <?php }
+            } else {
+                echo "<p>Không có chi tiết nào cho phiếu đặt này.</p>";
+            }
+            ?>
+        </div>
+    </div>
 
    <?php
       }
@@ -277,45 +496,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     {
 
     ?>
-    <tr style="font-size: 12px;">
-    <td><?php echo $pd['MaPhieuDat']; ?></td>
-    <td><?php echo $pd['NgayLap']; ?></td>
-    
-    <td><?php echo $pd['TrangThai']; ?></td>
-    <td><?php echo $pd['TenHSX']; ?></td>
-    <td>
-      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-        
+   <tr style="font-size: 12px;">
+        <td><?php echo $pd['MaPhieuDat']; ?></td>
+        <td><?php echo $pd['NgayLap']; ?></td>
+        <td><?php echo $pd['TrangThai']; ?></td>
+        <td><?php echo $pd['TenHSX']; ?></td>
+        <td>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                Xem chi tiết
+            </button>
+        </td>
+    </tr>
+    <!-- Offcanvas for each PhieuDat -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Mã phiếu đặt: <?php echo $pd['MaPhieuDat']; ?></p>
+            <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></p>
+            <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></p>
+            <?php
+            // Câu truy vấn SQL để lấy chi tiết phiếu đặt
+            $sql_chitiet = "SELECT sp.TenSP, ctpd.SoLuong FROM chitietphieudat ctpd INNER JOIN sanpham sp ON ctpd.MaSanPham = sp.MaSP WHERE ctpd.MaPhieuDat = :MaPhieuDat";
+            $stmt_chitiet = $conn->prepare($sql_chitiet);
+            $stmt_chitiet->bindParam(':MaPhieuDat', $pd['MaPhieuDat']);
+            $stmt_chitiet->execute();
+            $chitietphieudat = $stmt_chitiet->fetchAll();
 
-
-  <button class="btn btn-outline-primary" type="button"  name="btn_chitiet"value="<?php echo $pd['MaPhieuDat']; ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-    </svg>
-   </button>
-   </form>
-   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-              <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="offcanvas-body">
-                  <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                  <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></span></p> 
-                  <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></span></p>           
-                  <?php 
-                  foreach($chitietphieudat as $ctsp)
-                  {
-                  ?>
-                  
-                  <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                  <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                  <?php
-                  }
-                  ?>
-              </div>
-          </div>
+            if ($stmt_chitiet->rowCount() > 0) {
+                foreach ($chitietphieudat as $ctpd) {
+                    ?>
+                    <p>Tên sản phẩm: <?php echo $ctpd['TenSP']; ?></p>
+                    <p>Số lượng: <?php echo $ctpd['SoLuong']; ?></p>
+                <?php }
+            } else {
+                echo "<p>Không có chi tiết nào cho phiếu đặt này.</p>";
+            }
+            ?>
+        </div>
+    </div>
    <?php
        }
       } 
@@ -326,44 +547,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         {
 
         ?>
-        <tr style="font-size: 12px;">
+       <tr style="font-size: 12px;">
         <td><?php echo $pd['MaPhieuDat']; ?></td>
         <td><?php echo $pd['NgayLap']; ?></td>
-        
         <td><?php echo $pd['TrangThai']; ?></td>
         <td><?php echo $pd['TenHSX']; ?></td>
         <td>
-          <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-           
-  
-      <button class="btn btn-outline-primary" name="btn_chitiet"value="<?php echo $pd['MaPhieuDat']; ?>" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-        </svg>
-       </button>
-       </form>
-       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-              <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="offcanvas-body">
-                  <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                  <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></span></p> 
-                  <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></span></p>           
-                  <?php 
-                  foreach($chitietphieudat as $ctsp)
-                  {
-                  ?>
-                  
-                  <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                  <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                  <?php
-                  }
-                  ?>
-              </div>
-          </div>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                Xem chi tiết
+            </button>
+        </td>
+    </tr>
+    <!-- Offcanvas for each PhieuDat -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Mã phiếu đặt: <?php echo $pd['MaPhieuDat']; ?></p>
+            <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></p>
+            <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></p>
+            <?php
+            // Câu truy vấn SQL để lấy chi tiết phiếu đặt
+            $sql_chitiet = "SELECT sp.TenSP, ctpd.SoLuong FROM chitietphieudat ctpd INNER JOIN sanpham sp ON ctpd.MaSanPham = sp.MaSP WHERE ctpd.MaPhieuDat = :MaPhieuDat";
+            $stmt_chitiet = $conn->prepare($sql_chitiet);
+            $stmt_chitiet->bindParam(':MaPhieuDat', $pd['MaPhieuDat']);
+            $stmt_chitiet->execute();
+            $chitietphieudat = $stmt_chitiet->fetchAll();
+
+            if ($stmt_chitiet->rowCount() > 0) {
+                foreach ($chitietphieudat as $ctpd) {
+                    ?>
+                    <p>Tên sản phẩm: <?php echo $ctpd['TenSP']; ?></p>
+                    <p>Số lượng: <?php echo $ctpd['SoLuong']; ?></p>
+                <?php }
+            } else {
+                echo "<p>Không có chi tiết nào cho phiếu đặt này.</p>";
+            }
+            ?>
+        </div>
+    </div>
        <?php
        }
           }else 
@@ -372,48 +596,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             {
 
             ?>
-            <tr style="font-size: 12px;">
-            <td><?php echo $pd['MaPhieuDat']; ?></td>
-            <td><?php echo $pd['NgayLap']; ?></td>
-            
-            <td><?php echo $pd['TrangThai']; ?></td>
-            <td><?php echo $pd['TenHSX']; ?></td>
-            <td>
-              <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                
-      
-          <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation" id="btn_chitiet" name="btn_chitiet" value="<?php echo $pd['MaPhieuDat'] ?>">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-            </svg>
-           </button>
-           </form>
-           <input type="hidden" name="bpd" value="<?php echo $pd['MaPhieuDat']; ?>">
-
-           <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-              <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="offcanvas-body">
-            <p>Mã phiếu đặt: <?php echo $pd['MaPhieuDat']; ?></span></p>
-            <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></span></p> 
-            <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></span></p>           
-            <?php 
-            if(isset($chitietphieudat)) {
-                foreach($chitietphieudat as $ctsp) {
-            ?>
-            <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-            <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
+           <tr style="font-size: 12px;">
+        <td><?php echo $pd['MaPhieuDat']; ?></td>
+        <td><?php echo $pd['NgayLap']; ?></td>
+        <td><?php echo $pd['TrangThai']; ?></td>
+        <td><?php echo $pd['TenHSX']; ?></td>
+        <td>
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                Xem chi tiết
+            </button>
+        </td>
+    </tr>
+    <!-- Offcanvas for each PhieuDat -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuDat']; ?>" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Mã phiếu đặt: <?php echo $pd['MaPhieuDat']; ?></p>
+            <p>Ngày đặt: <?php echo $pd['NgayLap']; ?></p>
+            <p>Hãng sản xuất: <?php echo $pd['TenHSX']; ?></p>
             <?php
-                }
+            // Câu truy vấn SQL để lấy chi tiết phiếu đặt
+            $sql_chitiet = "SELECT sp.TenSP, ctpd.SoLuong FROM chitietphieudat ctpd INNER JOIN sanpham sp ON ctpd.MaSanPham = sp.MaSP WHERE ctpd.MaPhieuDat = :MaPhieuDat";
+            $stmt_chitiet = $conn->prepare($sql_chitiet);
+            $stmt_chitiet->bindParam(':MaPhieuDat', $pd['MaPhieuDat']);
+            $stmt_chitiet->execute();
+            $chitietphieudat = $stmt_chitiet->fetchAll();
+
+            if ($stmt_chitiet->rowCount() > 0) {
+                foreach ($chitietphieudat as $ctpd) {
+                    ?>
+                    <p>Tên sản phẩm: <?php echo $ctpd['TenSP']; ?></p>
+                    <p>Số lượng: <?php echo $ctpd['SoLuong']; ?></p>
+                <?php }
             } else {
-                echo "Không có chi tiết phiếu đặt nào được tìm thấy.";
+                echo "<p>Không có chi tiết nào cho phiếu đặt này.</p>";
             }
             ?>
         </div>
-
+    </div>
            <?php
               }
     
@@ -478,6 +701,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
       }
       loadFooter();
+
+
+     
     </script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">

@@ -18,6 +18,7 @@ class KhachHang {
 
     public function __construct($db) {
         $this->db = $db;
+        $this->conn = $this->db->getConnection(); // Gán giá trị cho thuộc tính $conn
     }
 
     public function create() {

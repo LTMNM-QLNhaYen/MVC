@@ -6,6 +6,21 @@ require_once("../controller/HangSanXuat_con.php");
 require_once("../controller/SanPham_con.php");
 
 $conn = new DB();
+
+include_once '../controller/TaiKhoanNV_con.php';
+$taiKhoanController = new TaiKhoanNVController($conn);
+session_start();
+$UserName = $_SESSION['UserName']; 
+
+if (!isset($_SESSION['UserName'])) {
+  // Nếu không đăng nhập, chuyển hướng đến trang đăng nhập
+  header("Location: Login_Admin.php");
+  exit(); // Dừng kịch bản để chuyển hướng được thực hiện
+}
+
+//Thong tin user
+$accountInfo = $taiKhoanController->getAccountInfo($UserName);
+
 $sql_phieunhap = "SELECT pd.MaPhieuNhap AS MaPhieuNhap ,pd.MaPhieuDat AS MaPhieuDat , pd.NgayNhap  AS NgayNhap , pd.TrangThai  AS TrangThai, pd.TongTien  AS TongTien , nv.TenNV  AS TenNV , pd.MaNV  AS MANV 
                  FROM phieunhap pd
                  JOIN nhanvien nv ON pd.MaNV = nv.MaNV";
@@ -71,6 +86,185 @@ $phieunhap = $stmt_phieunhap->fetchAll();
     <title>Quản lý thông tin nhập hàng</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 <style>
+#btn-message {
+  --text-color: #000;
+  --bg-color-sup: #d2d2d2;
+  --bg-color: #f4f4f4;
+  --bg-hover-color: #ffffff;
+  --online-status: #00da00;
+  --font-size: 16px;
+  --btn-transition: all 0.2s ease-out;
+}
+
+.button-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 400 var(--font-size) Helvetica Neue, sans-serif;
+  box-shadow: 0 0 2.17382px rgba(0,0,0,.049),0 1.75px 6.01034px rgba(0,0,0,.07),0 3.63px 14.4706px rgba(0,0,0,.091),0 22px 48px rgba(0,0,0,.14);
+  background-color: var(--bg-color);
+  border-radius: 68px;
+  cursor: pointer;
+  padding: 6px 10px 6px 6px;
+  width: fit-content;
+  height: 40px;
+  border: 0;
+  overflow: hidden;
+  position: relative;
+  transition: var(--btn-transition);
+}
+
+.button-message:hover {
+  height: 56px;
+  padding: 8px 20px 8px 8px;
+  background-color: var(--bg-hover-color);
+  transition: var(--btn-transition);
+}
+
+.button-message:active {
+  transform: scale(0.99);
+}
+
+.content-avatar {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  transition: var(--btn-transition);
+  position: relative;
+}
+
+.button-message:hover .content-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-color-sup);
+}
+
+.user-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-user {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  right: 1px;
+  bottom: 1px;
+  border-radius: 50%;
+  outline: solid 2px var(--bg-color);
+  background-color: var(--online-status);
+  transition: var(--btn-transition);
+  animation: active-status 2s ease-in-out infinite;
+}
+
+.button-message:hover .status-user {
+  width: 10px;
+  height: 10px;
+  right: 1px;
+  bottom: 1px;
+  outline: solid 3px var(--bg-hover-color);
+}
+
+.notice-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 8px;
+  text-align: initial;
+  color: var(--text-color);
+}
+
+.username {
+  letter-spacing: -6px;
+  height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: var(--btn-transition);
+}
+
+.user-id {
+  font-size: 12px;
+  letter-spacing: -6px;
+  height: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: var(--btn-transition);
+}
+
+.lable-message {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  transform: scaleY(1);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .username {
+  height: auto;
+  letter-spacing: normal;
+  opacity: 1;
+  transform: translateY(0);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .user-id {
+  height: auto;
+  letter-spacing: normal;
+  opacity: 1;
+  transform: translateY(0);
+  transition: var(--btn-transition);
+}
+
+.button-message:hover .lable-message {
+  height: 0;
+  transform: scaleY(0);
+  transition: var(--btn-transition);
+}
+
+.lable-message, .username {
+  font-weight: 600;
+}
+
+.number-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-left: 8px;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--bg-color-sup);
+  border-radius: 20px;
+}
+
+/*==============================================*/
+@keyframes active-status {
+  0% {
+    background-color: var(--online-status);
+  }
+
+  33.33% {
+    background-color: #93e200;
+  }
+
+  66.33% {
+    background-color: #93e200;
+  }
+
+  100% {
+    background-color: var(--online-status);
+  }
+}
 .cta {
   align-items: center;
   appearance: none;
@@ -140,9 +334,32 @@ $phieunhap = $stmt_phieunhap->fetchAll();
         </div>
       
         <div class="col-10" style="padding: 20px 20px 20px 10px;">
+        <div class="row" style="height:40px">
+    <div class="col-10"><div id="btn-message" class="button-message">
+            <div class="content-avatar">
+                <div class="status-user"></div>
+                <div class="avatar">
+                    <svg class="user-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12,12.5c-3.04,0-5.5,1.73-5.5,3.5s2.46,3.5,5.5,3.5,5.5-1.73,5.5-3.5-2.46-3.5-5.5-3.5Zm0-.5c1.66,0,3-1.34,3-3s-1.34-3-3-3-3,1.34-3,3,1.34,3,3,3Z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="notice-content">
+                <div class="username"><?php echo $UserName ?></div>
+                <div class="lable-message"><?php echo $accountInfo['maquyen']?><span class="number-message"></span></div>
+                <div class="user-id">ID: <?php echo $accountInfo['MaNV']?></div>
+            </div>
+        </div></div>
+        <div class="col-2"><form method="post" action="logout.php">
+            <button type="submit" class="btn btn-primary">Đăng xuất</button>
+        </form></div>
+    
 
 
-        
+    </div>
+
+    <h1>Quản lý nhập hàng</h1>
+
     <div class="navbar bg-body-tertiary" style="border-radius: 10px;">
         <div class="container-fluid">
             <form class="d-flex"  method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -174,229 +391,237 @@ $phieunhap = $stmt_phieunhap->fetchAll();
     <a type="button"class="cta" href="../view/ThemPhieuNhapHang.php">Thêm mới</a>
 
 
-        <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Mã phiếu nhập</th>
-      <th scope="col">Ngày nhập</th>
-      <th scope="col">Nhân viên</th>
-      <th scope="col">Mã phiếu đặt</th>
-      <th scope="col">Tổng tiền</th>
-      <th scope="col"></th>
-    </tr>
-    </tr>
-  </thead>
-  <tbody style ="line-height: 40px; height: 40px;">
-  <?php
-  if(!empty($ten)) 
-            {
-             foreach($phieunhap as $pd)
-            {
-
-            ?>
-            <tr style="font-size: 12px;">
-            <td><?php echo $pd['MaPhieuNhap']; ?></td>
-            <td><?php echo $pd['NgayNhap']; ?></td>
-            <td><?php echo $pd['TenNV']; ?></td>
-            <td><?php echo $pd['MaPhieuDat']; ?></td>
-              <td><?php echo $pd['TongTien']; ?></td>
-               <td>
-              <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-               
-      
-          <button class="btn btn-outline-primary" type="button" name="btn_chitiet"value="<?php echo $pd['MaPhieuNhap']; ?>"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-            </svg>
-           </button>
-           </form>
-           <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                      <div class="offcanvas-header">
-                          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                      </div>
-                      <div class="offcanvas-body">
-                          <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                          <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></span></p> 
-                          <p>Nhân viên: <?php echo $pd['TenNV']; ?></span></p>           
-                          <?php 
-                          foreach($chitietphieudat as $ctsp)
-                          {
-                          ?>
-                          
-                          <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                          <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                          <?php
-                          }
-                          ?>
-                      </div>
-                  </div>
-
-           <?php
-              }
-          } elseif(!empty($category_id)) 
-          {
-           foreach($phieunhap as $pd)
-            {
-
-            ?>
-            <tr style="font-size: 12px;">
-            <<td><?php echo $pd['MaPhieuNhap']; ?></td>
-            <td><?php echo $pd['NgayNhap']; ?></td>
-            <td><?php echo $pd['TenNV']; ?></td>
-            <td><?php echo $pd['MaPhieuDat']; ?></td>
-              <td><?php echo $pd['TongTien']; ?></td>
-            <td>
-              <form method="post" action="QL_NhapHang.php">
-                
-      
-          <button class="btn btn-outline-primary" type="button"  name="btn_chitiet"value="<?php echo $pd['MaPhieuNhap']; ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-            </svg>
-           </button>
-           </form>
-           <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                      <div class="offcanvas-header">
-                          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                      </div>
-                      <div class="offcanvas-body">
-                          <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                          <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></span></p> 
-                          <p>Nhân viên: <?php echo $pd['TenNV']; ?></span></p>          
-                          <?php 
-                          foreach($chitietphieudat as $ctsp)
-                          {
-                          ?>
-                          
-                          <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                          <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                          <?php
-                          }
-                          ?>
-                      </div>
-                  </div>
-           <?php
-               }
-              } 
-              
-              elseif(!empty($order_by)) 
-              {
-               foreach($phieunhap as $pd)
-                {
-    
-                ?>
+    <table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Mã phiếu nhập</th>
+            <th scope="col">Ngày nhập</th>
+            <th scope="col">Nhân viên</th>
+            <th scope="col">Mã phiếu đặt</th>
+            <th scope="col">Tổng tiền</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody style="line-height: 40px; height: 40px;">
+        <?php
+        if (!empty($ten)) {
+            foreach ($phieunhap as $pd) {
+        ?>
                 <tr style="font-size: 12px;">
-                <td><?php echo $pd['MaPhieuNhap']; ?></td>
-            <td><?php echo $pd['NgayNhap']; ?></td>
-            <td><?php echo $pd['TenNV']; ?></td>
-            <td><?php echo $pd['MaPhieuDat']; ?></td>
-              <td><?php echo $pd['TongTien']; ?></td>
-                <td>
-                  <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                    
-          
-              <button class="btn btn-outline-primary" name="btn_chitiet"value="<?php echo $pd['MaPhieuNhap']; ?>" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-                </svg>
-               </button>
-               </form>
-               <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                      <div class="offcanvas-header">
-                          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                      </div>
-                      <div class="offcanvas-body">
-                         <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                          <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></span></p> 
-                          <p>Nhân viên: <?php echo $pd['TenNV']; ?></span></p>             
-                          <?php 
-                          foreach($chitietphieudat as $ctsp)
-                          {
-                          ?>
-                          
-                          <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                          <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                          <?php
-                          }
-                          ?>
-                      </div>
-                  </div>
-               <?php
-               }
-                  }else 
-          
-                  { foreach($phieunhap as $pd)
-                    {
-        
-                    ?>
-                    <tr style="font-size: 12px;">
                     <td><?php echo $pd['MaPhieuNhap']; ?></td>
                     <td><?php echo $pd['NgayNhap']; ?></td>
                     <td><?php echo $pd['TenNV']; ?></td>
                     <td><?php echo $pd['MaPhieuDat']; ?></td>
-                      <td><?php echo $pd['TongTien']; ?></td>
-                            <td>
-                      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                       
-              
-                  <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation" id="btn_chitiet" name="btn_chitiet" value="<?php echo $pd['MaPhieuNhap'] ?>">
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-                    </svg>
-                   </button>
-                   </form>
-                   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                      <div class="offcanvas-header">
-                          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu đặt</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                      </div>
-                      <div class="offcanvas-body">
-                      <p>Mã phiếu đặt: <?php  echo $pd['MaPhieuDat'];?></span></p>
-                      <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></span></p> 
-                      <p>Nhân viên: <?php echo $pd['TenNV']; ?></span></p>            
-                    <?php 
-                    if(isset($chitietphieudat)) {
-                        foreach($chitietphieudat as $ctsp) {
-                    ?>
-                    <p>Tên sản phẩm: <?php echo $ctsp['TenSP']; ?></span></p>
-                    <p>Số lượng sản phẩm: <?php echo $ctsp['SoLuong']; ?></span></p>
-                    <?php
-                        }
-                    } else {
-                        echo "Không có chi tiết phiếu đặt nào được tìm thấy.";
-                    }
-                    ?>
-                </div>
+                    <td><?php echo $pd['TongTien']; ?></td>
+                    <td>
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <button class="btn btn-outline-primary" type="button" name="btn_chitiet" value="<?php echo $pd['MaPhieuNhap']; ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <!-- Offcanvas for each PhieuNhap -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-labelledby="offcanvasNavbarLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu nhập</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <p>Mã phiếu nhập: <?php echo $pd['MaPhieuNhap']; ?></p>
+                                <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></p>
+                                <p>Nhân viên: <?php echo $pd['TenNV']; ?></p>
+                                <!-- Thêm thông tin chi tiết từ cơ sở dữ liệu -->
+                                <?php
+                                // Câu truy vấn SQL để lấy chi tiết phiếu nhập
+                                $sql_chitiet = "SELECT sp.TenSP, ctpn.SoLuong FROM chitietphieunhap ctpn INNER JOIN sanpham sp ON ctpn.MaSP  = sp.MaSP WHERE ctpn.MaPhieuNhap = :MaPhieuNhap";
+                                $stmt_chitiet = $conn->prepare($sql_chitiet);
+                                $stmt_chitiet->bindParam(':MaPhieuNhap', $pd['MaPhieuNhap']);
+                                $stmt_chitiet->execute();
+                                $chitietphieunhap = $stmt_chitiet->fetchAll();
 
-                   <?php
-                      }
-            
-          }
-          ?>
+                                if ($stmt_chitiet->rowCount() > 0) {
+                                    foreach ($chitietphieunhap as $ctpn) {
+                                ?>
+                                        <p>Tên sản phẩm: <?php echo $ctpn['TenSP']; ?></p>
+                                        <p>Số lượng: <?php echo $ctpn['SoLuong']; ?></p>
+                                    <?php }
+                                } else {
+                                    echo "<p>Không có chi tiết nào cho phiếu nhập này.</p>";
+                                }
+                                    ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php
+            }
+        } elseif (!empty($category_id)) {
+            foreach ($phieunhap as $pd) {
+            ?>
+                <tr style="font-size: 12px;">
+                    <td><?php echo $pd['MaPhieuNhap']; ?></td>
+                    <td><?php echo $pd['NgayNhap']; ?></td>
+                    <td><?php echo $pd['TenNV']; ?></td>
+                    <td><?php echo $pd['MaPhieuDat']; ?></td>
+                    <td><?php echo $pd['TongTien']; ?></td>
+                    <td>
+                        <form method="post" action="QL_NhapHang.php">
+                            <button class="btn btn-outline-primary" type="button" name="btn_chitiet" value="<?php echo $pd['MaPhieuNhap']; ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <!-- Offcanvas for each PhieuNhap -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-labelledby="offcanvasNavbarLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu nhập</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <p>Mã phiếu nhập: <?php echo $pd['MaPhieuNhap']; ?></p>
+                                <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></p>
+                                <p>Nhân viên: <?php echo $pd['TenNV']; ?></p>
+                                <!-- Thêm thông tin chi tiết từ cơ sở dữ liệu -->
+                                <?php
+                                // Câu truy vấn SQL để lấy chi tiết phiếu nhập
+                                $sql_chitiet = "SELECT sp.TenSP, ctpn.SoLuong FROM chitietphieunhap ctpn INNER JOIN sanpham sp ON ctpn.MaSP  = sp.MaSP WHERE ctpn.MaPhieuNhap = :MaPhieuNhap";
+                                $stmt_chitiet = $conn->prepare($sql_chitiet);
+                                $stmt_chitiet->bindParam(':MaPhieuNhap', $pd['MaPhieuNhap']);
+                                $stmt_chitiet->execute();
+                                $chitietphieunhap = $stmt_chitiet->fetchAll();
 
+                                if ($stmt_chitiet->rowCount() > 0) {
+                                    foreach ($chitietphieunhap as $ctpn) {
+                                ?>
+                                        <p>Tên sản phẩm: <?php echo $ctpn['TenSP']; ?></p>
+                                        <p>Số lượng: <?php echo $ctpn['SoLuong']; ?></p>
+                                    <?php }
+                                } else {
+                                    echo "<p>Không có chi tiết nào cho phiếu nhập này.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php
+            }
+        } elseif (!empty($order_by)) {
+            foreach ($phieunhap as $pd) {
+            ?>
+                <tr style="font-size: 12px;">
+                    <td><?php echo $pd['MaPhieuNhap']; ?></td>
+                    <td><?php echo $pd['NgayNhap']; ?></td>
+                    <td><?php echo $pd['TenNV']; ?></td>
+                    <td><?php echo $pd['MaPhieuDat']; ?></td>
+                    <td><?php echo $pd['TongTien']; ?></td>
+                    <td>
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <button class="btn btn-outline-primary" type="button" name="btn_chitiet" value="<?php echo $pd['MaPhieuNhap']; ?>" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <!-- Offcanvas for each PhieuNhap -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-labelledby="offcanvasNavbarLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu nhập</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <p>Mã phiếu nhập: <?php echo $pd['MaPhieuNhap']; ?></p>
+                                <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></p>
+                                <p>Nhân viên: <?php echo $pd['TenNV']; ?></p>
+                                <!-- Thêm thông tin chi tiết từ cơ sở dữ liệu -->
+                                <?php
+                                // Câu truy vấn SQL để lấy chi tiết phiếu nhập
+                                $sql_chitiet = "SELECT sp.TenSP, ctpn.SoLuong FROM chitietphieunhap ctpn INNER JOIN sanpham sp ON ctpn.MaSP  = sp.MaSP WHERE ctpn.MaPhieuNhap = :MaPhieuNhap";
+                                $stmt_chitiet = $conn->prepare($sql_chitiet);
+                                $stmt_chitiet->bindParam(':MaPhieuNhap', $pd['MaPhieuNhap']);
+                                $stmt_chitiet->execute();
+                                $chitietphieunhap = $stmt_chitiet->fetchAll();
 
+                                if ($stmt_chitiet->rowCount() > 0) {
+                                    foreach ($chitietphieunhap as $ctpn) {
+                                ?>
+                                        <p>Tên sản phẩm: <?php echo $ctpn['TenSP']; ?></p>
+                                        <p>Số lượng: <?php echo $ctpn['SoLuong']; ?></p>
+                                    <?php }
+                                } else {
+                                    echo "<p>Không có chi tiết nào cho phiếu nhập này.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+        <?php
+            }
+        } else {
+            foreach ($phieunhap as $pd) {
+        ?>
+                <tr style="font-size: 12px;">
+                    <td><?php echo $pd['MaPhieuNhap']; ?></td>
+                    <td><?php echo $pd['NgayNhap']; ?></td>
+                    <td><?php echo $pd['TenNV']; ?></td>
+                    <td><?php echo $pd['MaPhieuDat']; ?></td>
+                    <td><?php echo $pd['TongTien']; ?></td>
+                    <td>
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-controls="offcanvasNavbar" aria-label="Toggle navigation" id="btn_chitiet" name="btn_chitiet" value="<?php echo $pd['MaPhieuNhap'] ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-chat-left-text" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <!-- Offcanvas for each PhieuNhap -->
+                        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar<?php echo $pd['MaPhieuNhap']; ?>" aria-labelledby="offcanvasNavbarLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Thông tin phiếu nhập</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            </div>
+                            <div class="offcanvas-body">
+                                <p>Mã phiếu nhập: <?php echo $pd['MaPhieuNhap']; ?></p>
+                                <p>Ngày nhập: <?php echo $pd['NgayNhap']; ?></p>
+                                <p>Nhân viên: <?php echo $pd['TenNV']; ?></p>
+                                <!-- Thêm thông tin chi tiết từ cơ sở dữ liệu -->
+                                <?php
+                                // Câu truy vấn SQL để lấy chi tiết phiếu nhập
+                                $sql_chitiet = "SELECT sp.TenSP, ctpn.SoLuong FROM chitietphieunhap ctpn INNER JOIN sanpham sp ON ctpn.MaSP  = sp.MaSP WHERE ctpn.MaPhieuNhap = :MaPhieuNhap";
+                                $stmt_chitiet = $conn->prepare($sql_chitiet);
+                                $stmt_chitiet->bindParam(':MaPhieuNhap', $pd['MaPhieuNhap']);
+                                $stmt_chitiet->execute();
+                                $chitietphieunhap = $stmt_chitiet->fetchAll();
 
-        
-
-    
-    </td>
-    </tr>
-   
-        </td>
-    </tr>
-  </tbody>
-
-        </table>     
-  </div>
-    </div>  </div>
+                                if ($stmt_chitiet->rowCount() > 0) {
+                                    foreach ($chitietphieunhap as $ctpn) {
+                                ?>
+                                        <p>Tên sản phẩm: <?php echo $ctpn['TenSP']; ?></p>
+                                        <p>Số lượng: <?php echo $ctpn['SoLuong']; ?></p>
+                                    <?php }
+                                } else {
+                                    echo "<p>Không có chi tiết nào cho phiếu nhập này.</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+    <?php
+            }
+        }
+    ?>
+    </tbody>
+    </table>
     </div>
+    </div>
+    </div>
+    </div> </div>
+    </div>
+
 
       <div class="row">
         <div id="footer">

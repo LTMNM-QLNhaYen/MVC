@@ -3,7 +3,7 @@
 include_once '../model/DB.php';
 include_once '../model/HoaDon.php';
 include_once '../model/KhachHang.php';
-include_once '../controller/TaiKhoanNV_con.php';
+
 
 
 
@@ -13,12 +13,14 @@ $db = new DB();
 $hoaDonModel = new HoaDon($db);
 $KhachHangModel = new KhachHang($db);
 
-$taiKhoanController = new TaiKhoanNVController($db);
+
 // Gọi phương thức để tính tổng thành tiền của các hóa đơn
 $totalThanhTien = $hoaDonModel->getTotalThanhTien();
 $totalHoaDon = $hoaDonModel->countHoaDon();
 $totalKH = $KhachHangModel->countKhachHang();
 
+include_once '../controller/TaiKhoanNV_con.php';
+$taiKhoanController = new TaiKhoanNVController($db);
 session_start();
 $UserName = $_SESSION['UserName']; 
 
@@ -357,7 +359,7 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
                 <p class="text-title">Doanh thu</p>
                 <p class="text-body"><b><?php  echo $totalThanhTien; ?> đ</b></p>
             </div>
-            <button class="card-button">More info</button>
+            <button type="button" class="card-button" onclick="window.location.href='../view/HoaDon_View.php'">More info</button>
         </div> 
     
    
@@ -367,7 +369,7 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
                 <p class="text-title">Đơn hàng</p>
                 <p class="text-body"><b><?php  echo $totalHoaDon; ?></b></p>
             </div>
-            <button class="card-button" >More info</button>
+            <button type="button" class="card-button"   onclick="window.location.href='../view/HoaDon_View.php'" >More info</button>
         </div>
    
         <div class="card">
@@ -376,7 +378,7 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
                 <p class="text-title">Khách hàng</p>
                 <p class="text-body"><b><?php echo $totalKH; ?></b></p>
             </div>
-            <button class="card-button">More info</button>
+            <button type="button" class="card-button" onclick="window.location.href='../view/KhachHang_View.php'">More info</button>
         </div>
     
 </div></div>
