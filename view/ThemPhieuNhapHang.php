@@ -50,56 +50,82 @@ $stmt_phieudat->execute();
 $phieudat = $stmt_phieudat->fetchAll();
 
 // Xử lý thêm phiếu nhập hàng
-// Xử lý thêm phiếu nhập hàng
 if (isset($_POST['btn_them'])) {
-echo "Button 'btn_them' is set!";
+    // Kiểm tra dữ liệu từ form
+    if (isset($_POST['btn_pd'], $_POST['txt_masp'], $_POST['txt_soluong'], $_POST['txt_gia'])) {
+        // Lấy thông tin chi tiết về số lượng đã đặt của mỗi sản phẩm trong mỗi phiếu đặt
+        $maPD = $_POST['btn_pd'];
+        $sql_soluong_dadat = "SELECT pd.MaSanPham, SUM(pd.SoLuong) AS SoLuongDaDat
+                              FROM ChiTietPhieuDat pd
+                              WHERE pd.MaPhieuDat = ?
+                              GROUP BY pd.MaSanPham";
+        $stmt_soluong_dadat = $conn->prepare($sql_soluong_dadat);
+        $stmt_soluong_dadat->execute([$maPD]);
+        $result_soluong_dadat = $stmt_soluong_dadat->fetchAll(PDO::FETCH_ASSOC);
 
-// Kiểm tra sự tồn tại của MaPhieuDat
-if (isset($_POST['btn_pd'], $_POST['txt_masp'], $_POST['txt_soluong'], $_POST['txt_gia'])) {
-$tt = 1000; // Giả sử đây là một giá trị tạm thời cho tổng tiền
-$date = date("Y-m-d");
-$maPD = $_POST['btn_pd'];
+        // Tạo một mảng để lưu số lượng đã đặt của mỗi sản phẩm
+        $soluong_dadat_by_masp = [];
+        foreach ($result_soluong_dadat as $item) {
+            $masp = $item['MaSanPham'];
+            $soluong_dadat = $item['SoLuongDaDat'];
+            $soluong_dadat_by_masp[$masp] = $soluong_dadat;
+        }
 
-// Kiểm tra tồn tại của MaPhieuDat trong bảng phieudat
-$sql_check_phieudat = "SELECT COUNT(*) AS count FROM phieudat WHERE MaPhieuDat = ?";
-$stmt_check_phieudat = $conn->prepare($sql_check_phieudat);
-$stmt_check_phieudat->execute([$maPD]);
-$count = $stmt_check_phieudat->fetchColumn();
+        // Kiểm tra số lượng nhập so với số lượng đã đặt
+        $co_loi = false;
+        foreach ($_POST['txt_masp'] as $index => $maSP) {
+            $soluong_nhap = intval($_POST['txt_soluong'][$index]);
+            $soluong_dadat = isset($soluong_dadat_by_masp[$maSP]) ? $soluong_dadat_by_masp[$maSP] : 0;
+            if ($soluong_nhap > $soluong_dadat) {
+                // Số lượng nhập vượt quá số lượng đã đặt
+                $co_loi = true;
+                echo "Số lượng nhập của sản phẩm có mã " . $maSP . " vượt quá số lượng đã đặt ($soluong_dadat) của phiếu đặt có mã $maPD <br>";
+            }
+        }
 
-if ($count > 0) {
-// MaPhieuDat tồn tại trong bảng phieudat, tiếp tục chèn dữ liệu vào bảng phieunhap
-$sql_insert_phieunhap = "INSERT INTO phieunhap (MaNV, NgayNhap, MaPhieuDat, TongTien, TrangThai) VALUES (1, ?, ?, ?, 'Đã nhập')";
-$stmt_insert_phieunhap = $conn->prepare($sql_insert_phieunhap);
-$stmt_insert_phieunhap->execute([$date, $maPD, $tt]);
+        // Nếu không có lỗi, thêm phiếu nhập hàng vào cơ sở dữ liệu
+        if (!$co_loi) {
+            $tt = 1000; // Giả sử đây là một giá trị tạm thời cho tổng tiền
+            $date = date("Y-m-d");
+            $maPD = $_POST['btn_pd'];
 
-$lastInsertedId = $conn->getConnection()->lastInsertId();
+            // Kiểm tra tồn tại của MaPhieuDat trong bảng phieudat
+            $sql_check_phieudat = "SELECT COUNT(*) AS count FROM phieudat WHERE MaPhieuDat = ?";
+            $stmt_check_phieudat = $conn->prepare($sql_check_phieudat);
+            $stmt_check_phieudat->execute([$maPD]);
+            $count = $stmt_check_phieudat->fetchColumn();
 
-// Inserting into ChiTietPhieuNhap table
-foreach ($_POST['txt_masp'] as $index => $maSP) {
+            if ($count > 0) {
+                // MaPhieuDat tồn tại trong bảng phieudat, tiếp tục chèn dữ liệu vào bảng phieunhap
+                $sql_insert_phieunhap = "INSERT INTO phieunhap (MaNV, NgayNhap, MaPhieuDat, TongTien, TrangThai) VALUES (1, ?, ?, ?, 'Đã nhập')";
+                $stmt_insert_phieunhap = $conn->prepare($sql_insert_phieunhap);
+                $stmt_insert_phieunhap->execute([$date, $maPD, $tt]);
 
+                $lastInsertedId = $conn->getConnection()->lastInsertId();
 
-$gia = intval($_POST['txt_gia'][$index]);
-$quantity = intval($_POST['txt_soluong'][$index]);
-$thanhtien = $gia * $quantity;
+                // Inserting into ChiTietPhieuNhap table
+                foreach ($_POST['txt_masp'] as $index => $maSP) {
+                    $gia = intval($_POST['txt_gia'][$index]);
+                    $quantity = intval($_POST['txt_soluong'][$index]);
+                    $thanhtien = $gia * $quantity;
 
-if (!empty($quantity)) {
-$sql_insert_chitiet = "INSERT INTO chitietphieunhap (MaPhieuNhap, MaSP, SoLuong, GiaNhap, ThanhTien) VALUES (?, ?, ?, ?, ?)";
-$stmt_insert_chitiet = $conn->prepare($sql_insert_chitiet);
-$stmt_insert_chitiet->execute([$lastInsertedId, $maSP, $quantity, $gia, $thanhtien]);
+                    if (!empty($quantity)) {
+                        $sql_insert_chitiet = "INSERT INTO chitietphieunhap (MaPhieuNhap, MaSP, SoLuong, GiaNhap, ThanhTien) VALUES (?, ?, ?, ?, ?)";
+                        $stmt_insert_chitiet = $conn->prepare($sql_insert_chitiet);
+                        $stmt_insert_chitiet->execute([$lastInsertedId, $maSP, $quantity, $gia, $thanhtien]);
+                    }
+                }
+            } else {
+                // MaPhieuDat không tồn tại trong bảng phieudat, xử lý lỗi hoặc thông báo lỗi
+                echo "MaPhieuDat không tồn tại trong bảng phieudat!";
+                // Thực hiện hành động phù hợp với logic ứng dụng của bạn, ví dụ: hiển thị thông báo lỗi
+            }
+        }
+    } else {
+        // Dữ liệu từ form không đầy đủ
+        echo "Dữ liệu từ form không đầy đủ!";
+    }
 }
-}
-} else {
-// MaPhieuDat không tồn tại trong bảng phieudat, xử lý lỗi hoặc thông báo lỗi
-echo "MaPhieuDat không tồn tại trong bảng phieudat!";
-// Thực hiện hành động phù hợp với logic ứng dụng của bạn, ví dụ: hiển thị thông báo lỗi
-}
-} else {
-//   echo "Dữ liệu từ form không tồn tại!";
-}
-} else {
-// echo "Button 'btn_them' is not set!";
-}
-
 
 ?>
 
