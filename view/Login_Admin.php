@@ -116,7 +116,7 @@ if(isset($_POST['submit'])) {
    <div class="container">
     <div class="row">
 <div class="col-6">
-  <form class="form" method="post" >
+  <form class="form" method="post" style="margin-top:150px">
        <p class="form-title">Sign in to your account</p>
        <?php if(isset($error)): ?>
         <div class="alert alert-danger" role="alert">
