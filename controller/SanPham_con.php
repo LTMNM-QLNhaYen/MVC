@@ -1,64 +1,65 @@
 <?php
-require_once 'model/SanPham.php';
+require_once("../model/SanPham.php");
 
 class SanPhamController {
-    private $model;
+    private $db;
+    private $sanPhamModel;
 
     public function __construct($db) {
-        $this->model = new SanPham($db);
+        $this->db = $db;
+        $this->sanPhamModel = new SanPham($db);
     }
 
     public function create($data) {
-        $this->model->TenSP = $data['TenSP'];
-        $this->model->DonViTinh = $data['DonViTinh'];
-        $this->model->GiaBan = $data['GiaBan'];
-        $this->model->GiaNhap = $data['GiaNhap'];
-        $this->model->TinhTrang = $data['TinhTrang'];
-        $this->model->MoTa = $data['MoTa'];
-        $this->model->ThongTin = $data['ThongTin'];
-        $this->model->ImageUrl = $data['ImageUrl'];
-        $this->model->MaLoai = $data['MaLoai'];
-        $this->model->TonKho = $data['TonKho'];
+        $this->sanPhamModel->TenSP = $data['TenSP'];
+        $this->sanPhamModel->DonViTinh = $data['DonViTinh'];
+        $this->sanPhamModel->GiaBan = $data['GiaBan'];
+        $this->sanPhamModel->GiaNhap = $data['GiaNhap'];
+        $this->sanPhamModel->TinhTrang = $data['TinhTrang'];
+        $this->sanPhamModel->MoTa = $data['MoTa'];
+        $this->sanPhamModel->ThongTin = $data['ThongTin'];
+        $this->sanPhamModel->ImageUrl = $data['ImageUrl'];
+        $this->sanPhamModel->MaLoai = $data['MaLoai'];
+        $this->sanPhamModel->TonKho = $data['TonKho'];
 
-        if ($this->model->create()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function read() {
-        return $this->model->read();
+        return $this->sanPhamModel->create();
     }
 
     public function update($data) {
-        $this->model->MaSP = $data['MaSP'];
-        $this->model->TenSP = $data['TenSP'];
-        $this->model->DonViTinh = $data['DonViTinh'];
-        $this->model->GiaBan = $data['GiaBan'];
-        $this->model->GiaNhap = $data['GiaNhap'];
-        $this->model->TinhTrang = $data['TinhTrang'];
-        $this->model->MoTa = $data['MoTa'];
-        $this->model->ThongTin = $data['ThongTin'];
-        $this->model->ImageUrl = $data['ImageUrl'];
-        $this->model->MaLoai = $data['MaLoai'];
-        $this->model->TonKho = $data['TonKho'];
+        $this->sanPhamModel->MaSP = $data['MaSP'];
+        $this->sanPhamModel->TenSP = $data['TenSP'];
+        $this->sanPhamModel->DonViTinh = $data['DonViTinh'];
+        $this->sanPhamModel->GiaBan = $data['GiaBan'];
+        $this->sanPhamModel->GiaNhap = $data['GiaNhap'];
+        $this->sanPhamModel->TinhTrang = $data['TinhTrang'];
+        $this->sanPhamModel->MoTa = $data['MoTa'];
+        $this->sanPhamModel->ThongTin = $data['ThongTin'];
+        $this->sanPhamModel->ImageUrl = $data['ImageUrl'];
+        $this->sanPhamModel->MaLoai = $data['MaLoai'];
+        $this->sanPhamModel->TonKho = $data['TonKho'];
 
-        if ($this->model->update()) {
-            return true;
-        }
-
-        return false;
+        return $this->sanPhamModel->update();
     }
 
-    public function delete($id) {
-        $this->model->MaSP = $id;
+    public function delete($maSP) {
+        $this->sanPhamModel->MaSP = $maSP;
+        return $this->sanPhamModel->delete();
+    }
 
-        if ($this->model->delete()) {
-            return true;
-        }
+    public function findByName($name) {
+        return $this->sanPhamModel->findByName($name);
+    }
 
-        return false;
+    public function sortBy($column, $order) {
+        return $this->sanPhamModel->sortBy($column, $order);
+    }
+
+    public function getAll() {
+        return $this->sanPhamModel->getAll();
+    }
+
+    public function getByManufacturer($manufacturerId) {
+        return $this->sanPhamModel->getByManufacturer($manufacturerId);
     }
 }
 ?>

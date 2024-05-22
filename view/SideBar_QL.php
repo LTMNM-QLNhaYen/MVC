@@ -20,11 +20,11 @@
     <a type="button" class="list-group-item list-group-item-action" href="../view/KhachHang_View.php">Khách hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/HangSanXuat_View.php">Hãng sản xuất</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/TinTuc_View.php">Tin tức</a>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_DonHang.php">Đơn hàng</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/HoaDon_View.php">Đơn hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/NhanVien_View.php">Nhân viên</a>
 
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_NhapHang.php">Nhập hàng</a>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_DatHang.php"  >Đặt hàng</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/NhapHang_View.php">Nhập hàng</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/PhieuDat_View.php"  >Đặt hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/TaiKhoanNV_View.php">Tài khoản</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/ThongKe_View.php">Thống kê</a>
     </ul>
