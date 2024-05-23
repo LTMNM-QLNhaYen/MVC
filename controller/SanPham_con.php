@@ -10,40 +10,33 @@ class SanPhamController {
         $this->sanPhamModel = new SanPham($db);
     }
 
+   
     public function create($data) {
-        $this->sanPhamModel->TenSP = $data['TenSP'];
-        $this->sanPhamModel->DonViTinh = $data['DonViTinh'];
-        $this->sanPhamModel->GiaBan = $data['GiaBan'];
-        $this->sanPhamModel->GiaNhap = $data['GiaNhap'];
-        $this->sanPhamModel->TinhTrang = $data['TinhTrang'];
-        $this->sanPhamModel->MoTa = $data['MoTa'];
-        $this->sanPhamModel->ThongTin = $data['ThongTin'];
-        $this->sanPhamModel->ImageUrl = $data['ImageUrl'];
-        $this->sanPhamModel->MaLoai = $data['MaLoai'];
-        $this->sanPhamModel->TonKho = $data['TonKho'];
+        return $this->sanPhamModel->create($data);
+    }
 
-        return $this->sanPhamModel->create();
+    public function read() {
+        return $this->sanPhamModel->read();
     }
 
     public function update($data) {
-        $this->sanPhamModel->MaSP = $data['MaSP'];
-        $this->sanPhamModel->TenSP = $data['TenSP'];
-        $this->sanPhamModel->DonViTinh = $data['DonViTinh'];
-        $this->sanPhamModel->GiaBan = $data['GiaBan'];
-        $this->sanPhamModel->GiaNhap = $data['GiaNhap'];
-        $this->sanPhamModel->TinhTrang = $data['TinhTrang'];
-        $this->sanPhamModel->MoTa = $data['MoTa'];
-        $this->sanPhamModel->ThongTin = $data['ThongTin'];
-        $this->sanPhamModel->ImageUrl = $data['ImageUrl'];
-        $this->sanPhamModel->MaLoai = $data['MaLoai'];
-        $this->sanPhamModel->TonKho = $data['TonKho'];
-
-        return $this->sanPhamModel->update();
+        return $this->sanPhamModel->update($data);
     }
 
-    public function delete($maSP) {
-        $this->sanPhamModel->MaSP = $maSP;
-        return $this->sanPhamModel->delete();
+    public function delete($MaSP) {
+        return $this->sanPhamModel->delete($MaSP);
+    }
+
+    public function searchByName($name) {
+        return $this->sanPhamModel->searchByName($name);
+    }
+
+    public function getAllAscending() {
+        return $this->sanPhamModel->getAllAscending();
+    }
+
+    public function getAllDescending() {
+        return $this->sanPhamModel->getAllDescending();
     }
 
     public function findByName($name) {

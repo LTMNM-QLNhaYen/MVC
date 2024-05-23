@@ -21,117 +21,84 @@ class SanPham {
         $this->conn = $db;
     }
 
-    public function create() {
-        $query = "INSERT INTO " . $this->table . " 
-                  SET TenSP=:TenSP, DonViTinh=:DonViTinh, GiaBan=:GiaBan, GiaNhap=:GiaNhap, 
-                      TinhTrang=:TinhTrang, MoTa=:MoTa, ThongTin=:ThongTin, 
-                      ImageUrl=:ImageUrl, MaLoai=:MaLoai, TonKho=:TonKho";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(':TenSP', $this->TenSP);
-        $stmt->bindParam(':DonViTinh', $this->DonViTinh);
-        $stmt->bindParam(':GiaBan', $this->GiaBan);
-        $stmt->bindParam(':GiaNhap', $this->GiaNhap);
-        $stmt->bindParam(':TinhTrang', $this->TinhTrang);
-        $stmt->bindParam(':MoTa', $this->MoTa);
-        $stmt->bindParam(':ThongTin', $this->ThongTin);
-        $stmt->bindParam(':ImageUrl', $this->ImageUrl);
-        $stmt->bindParam(':MaLoai', $this->MaLoai);
-        $stmt->bindParam(':TonKho', $this->TonKho);
-
-        try {
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            return false;
-        }
+    public function create($data) {
+        $sql = "INSERT INTO SanPham (TenSP, DonViTinh, GiaBan, GiaNhap, TinhTrang, MoTa, ThongTin, ImageUrl, MaLoai, TonKho) 
+                VALUES (:TenSP, :DonViTinh, :GiaBan, :GiaNhap, :TinhTrang, :MoTa, :ThongTin, :ImageUrl, :MaLoai, :TonKho)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute($data);
     }
 
-    public function update() {
-        $query = "UPDATE " . $this->table . " 
-                  SET TenSP=:TenSP, DonViTinh=:DonViTinh, GiaBan=:GiaBan, GiaNhap=:GiaNhap, 
-                      TinhTrang=:TinhTrang, MoTa=:MoTa, ThongTin=:ThongTin, 
-                      ImageUrl=:ImageUrl, MaLoai=:MaLoai, TonKho=:TonKho
-                  WHERE MaSP = :MaSP";
-    
-        $stmt = $this->conn->prepare($query);
-    
-        // Clean data
-        $this->TenSP = htmlspecialchars(strip_tags($this->TenSP));
-        $this->DonViTinh = htmlspecialchars(strip_tags($this->DonViTinh));
-        $this->GiaBan = htmlspecialchars(strip_tags($this->GiaBan));
-        $this->GiaNhap = htmlspecialchars(strip_tags($this->GiaNhap));
-        $this->TinhTrang = htmlspecialchars(strip_tags($this->TinhTrang));
-        $this->MoTa = htmlspecialchars(strip_tags($this->MoTa));
-        $this->ThongTin = htmlspecialchars(strip_tags($this->ThongTin));
-        $this->ImageUrl = htmlspecialchars(strip_tags($this->ImageUrl));
-        $this->MaLoai = htmlspecialchars(strip_tags($this->MaLoai));
-        $this->TonKho = htmlspecialchars(strip_tags($this->TonKho));
-        $this->MaSP = htmlspecialchars(strip_tags($this->MaSP));
-    
-        // Bind data
-        $stmt->bindParam(':TenSP', $this->TenSP);
-        $stmt->bindParam(':DonViTinh', $this->DonViTinh);
-        $stmt->bindParam(':GiaBan', $this->GiaBan);
-        $stmt->bindParam(':GiaNhap', $this->GiaNhap);
-        $stmt->bindParam(':TinhTrang', $this->TinhTrang);
-        $stmt->bindParam(':MoTa', $this->MoTa);
-        $stmt->bindParam(':ThongTin', $this->ThongTin);
-        $stmt->bindParam(':ImageUrl', $this->ImageUrl);
-        $stmt->bindParam(':MaLoai', $this->MaLoai);
-        $stmt->bindParam(':TonKho', $this->TonKho);
-        $stmt->bindParam(':MaSP', $this->MaSP);
-    
-        // Execute query
-        try {
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            return false;
-        }
+    public function read() {
+        $sql = "SELECT * FROM SanPham";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-          
-              public function delete() {
-                  $query = "DELETE FROM " . $this->table . " WHERE MaSP = :MaSP";
-                  $stmt = $this->conn->prepare($query);
-                  $stmt->bindParam(':MaSP', $this->MaSP);
-          
-                  try {
-                      return $stmt->execute();
-                  } catch (PDOException $e) {
-                      return false;
-                  }
-              }
-          
-              public function findByName($name) {
-                  $query = "SELECT * FROM " . $this->table . " WHERE TenSP LIKE :name";
-                  $stmt = $this->conn->prepare($query);
-                  $name = "%$name%";
-                  $stmt->bindParam(':name', $name);
-                  $stmt->execute();
-                  return $stmt->fetchAll(PDO::FETCH_ASSOC);
-              }
-          
-              public function sortBy($column, $order) {
-                  $query = "SELECT * FROM " . $this->table . " ORDER BY $column $order";
-                  $stmt = $this->conn->prepare($query);
-                  $stmt->execute();
-                  return $stmt->fetchAll(PDO::FETCH_ASSOC);
-              }
-          
-              public function getAll() {
-                  $query = "SELECT * FROM " . $this->table;
-                  $stmt = $this->conn->prepare($query);
-                  $stmt->execute();
-                  return $stmt->fetchAll(PDO::FETCH_ASSOC);
-              }
-          
-              public function getByManufacturer($manufacturerId) {
-                  $query = "SELECT * FROM " . $this->table . " WHERE MaLoai = :manufacturerId";
-                  $stmt = $this->conn->prepare($query);
-                  $stmt->bindParam(':manufacturerId', $manufacturerId);
-                  $stmt->execute();
-                  return $stmt->fetchAll(PDO::FETCH_ASSOC);
-              }
-          }
-          ?>
-          
+
+    public function update($data) {
+        $sql = "UPDATE SanPham SET TenSP = :TenSP, DonViTinh = :DonViTinh, GiaBan = :GiaBan, GiaNhap = :GiaNhap, TinhTrang = :TinhTrang, MoTa = :MoTa, ThongTin = :ThongTin, ImageUrl = :ImageUrl, MaLoai = :MaLoai, TonKho = :TonKho WHERE MaSP = :MaSP";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute($data);
+    }
+
+    public function delete($MaSP) {
+        $sql = "DELETE FROM SanPham WHERE MaSP = :MaSP";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['MaSP' => $MaSP]);
+    }
+
+    public function searchByName($name) {
+        $sql = "SELECT * FROM SanPham WHERE TenSP LIKE :name";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['name' => "%$name%"]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllAscending() {
+        $sql = "SELECT * FROM SanPham ORDER BY TenSP ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getAllDescending() {
+        $sql = "SELECT * FROM SanPham ORDER BY TenSP DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
+    public function findByName($name) {
+        $query = "SELECT * FROM " . $this->table . " WHERE TenSP LIKE :name";
+        $stmt = $this->conn->prepare($query);
+        $name = "%$name%";
+        $stmt->bindParam(':name', $name);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function sortBy($column, $order) {
+        $query = "SELECT * FROM " . $this->table . " ORDER BY $column $order";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAll() {
+        $query = "SELECT * FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getByManufacturer($manufacturerId) {
+        $query = "SELECT * FROM " . $this->table . " WHERE MaLoai = :manufacturerId";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':manufacturerId', $manufacturerId);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+?>

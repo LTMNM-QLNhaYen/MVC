@@ -2,9 +2,11 @@
 // Include tệp kết nối cơ sở dữ liệu và mô hình
 include_once '../model/DB.php';
 include_once '../model/TaiKhoanNV.php';
-include_once '../controller/TaiKhoanNV_con.php';
 
 $db = new DB();
+
+include_once '../controller/TaiKhoanNV_con.php';
+
 $taiKhoanNVController = new TaiKhoanNVController($db);
 
 session_start();

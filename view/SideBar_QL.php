@@ -18,7 +18,7 @@
 
     <ul class="list-group list-group-flush">
     <li class="list-group-item" style="height: 100px; text-align: center ; padding: 35px 0px; font-size: 25px"><b>Dashboard</b></li>
-    <a type="button" class="list-group-item list-group-item-action" href="/nhayen/DoAn/QL_SanPham.php">Sản phẩm</a>
+    <a type="button" class="list-group-item list-group-item-action" href="../view/SanPham_View.php">Sản phẩm</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/KhachHang_View.php">Khách hàng</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/HangSanXuat_View.php">Hãng sản xuất</a>
     <a type="button" class="list-group-item list-group-item-action" href="../view/TinTuc_View.php">Tin tức</a>
