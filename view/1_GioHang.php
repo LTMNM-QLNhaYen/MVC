@@ -1,5 +1,12 @@
 <?php
-   //session_start();
+   session_start();
+   $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+   $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
+   $tenkh = isset($_SESSION['tenkh']) ? $_SESSION['tenkh'] : 'Guest';
+   
+   $is_logged_in = $user_id !== null;
+   
+
     include_once '../model/DB.php';
     include_once '../controller/LoaiSanPham_con.php';
 
@@ -125,13 +132,27 @@
             </ul>
         </nav>
         <div class="user-actions">
-        <form method="GET" action="../view/1_TrangSanPham.php">
-            <input type="text" name="search" placeholder="Search...">
-            <button type="submit" name="search-btn">Search</button>
+        <form method="GET" action="../view/1_TrangSanPham.php" class="search-form">
+            <input class="input-search" type="text" name="search" placeholder="Search...">
+            <button type="submit" class="btn-user" name="search-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0092E4" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>
+            </button>
         </form>
 
-            <button id="login-button">Login</button>
-            <button id="cart-button">Giỏ hàng</button>
+            <button class="btn-user" id="login-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0092E4" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
+                <span id="user-name">User Name</span>
+            </button>
+            <button class="btn-user" id="cart-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0092E4" class="bi bi-cart2" viewBox="0 0 16 16">
+                    <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
+                </svg>
+            </button>
         </div>
     </header>
 <br><br><br>
@@ -202,6 +223,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Lấy giá trị is_logged_in từ PHP
+var isLoggedIn = <?php echo json_encode($is_logged_in); ?>;
+        var userName = <?php echo json_encode($tenkh); ?>;
+
+        document.getElementById('login-button').addEventListener('click', function() {
+            if (isLoggedIn) {
+                window.location.href = '../view/1_ThongTinCaNhan.php';
+            } else {
+                window.location.href = '../view/1_DangNhap.php';
+            }
+        });
+
+        // Đặt tên người dùng nếu có trong session
+        document.getElementById('user-name').textContent = userName;
 </script>
 
 </body>

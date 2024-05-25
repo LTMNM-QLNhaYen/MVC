@@ -55,5 +55,10 @@ class KhachHangController {
     public function getAllDescending() {
         return $this->model->getAllDescending();
     }
+
+    public function Checklogin($UserName, $MatKhau) {
+        return $this->model->checkLogin($UserName, $MatKhau);
+
+    }
 }
 ?>

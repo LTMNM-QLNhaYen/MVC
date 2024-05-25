@@ -123,5 +123,16 @@ class KhachHang {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['totalKhachHang'];
     }
+
+    public function checkLogin($UserName, $MatKhau) {
+        $query = "SELECT * FROM {$this->table} WHERE UserName = :UserName AND MatKhau = :MatKhau AND TrangThai != 'Khoá'"; // Correct the property name
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':UserName', $UserName);
+        $stmt->bindParam(':MatKhau', $MatKhau);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row;
+    }
+
 }
 ?>

@@ -1,36 +1,31 @@
 <?php
-   //session_start();
-    include_once '../model/DB.php';
-    include_once '../controller/LoaiSanPham_con.php';
+   session_start();
 
-    include_once '../controller/SanPham_con.php';
+   include_once '../model/DB.php';
+   include_once '../controller/KhachHang_con.php';
+  
+$db = new DB();
 
-    include_once '../controller/HangSanXuat_con.php';
+$loginHandler = new KhachHangController($db);
 
-    include_once '../controller/TinTuc_con.php';
-    include_once '../controller/SanPham_TrongGioHang_con.php';
-
-    include_once '../controller/ChiTiet_SanPham_HangSanXuat_con.php';
-
-    $db = new DB();
-
-
-    // Khởi tạo đối tượng SanPhamController và đọc dữ liệu từ cơ sở dữ liệu
-    $sanPhamController = new SanPhamController($db);
-    $page = isset($_GET['page']) ? $_GET['page'] : 1; // Trang hiện tại, mặc định là trang 1
-    $limit = 10; // Số sản phẩm mỗi trang
-    $start = ($page - 1) * $limit; // Vị trí bắt đầu của kết quả truy vấn
-
-    $total_records = $sanPhamController->count(); // Tổng số sản phẩm
-
-    $total_pages = ceil($total_records / $limit); // Tổng số trang
-
-    $sanPham = $sanPhamController->readPerPage($start, $limit);
-
-    if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search-btn'])) {
-        $sanPham = $sanPhamController->findByName($_GET['search']);
-    }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $UserName = $_POST['username'];
+    $MatKhau = $_POST['password'];
     
+    $user = $loginHandler->Checklogin($UserName, $MatKhau);
+    if ($user) {
+        // Start a new session and store user information
+        $_SESSION['user_id'] = $user['MaKH'];
+        $_SESSION['username'] = $user['UserName'];
+        $_SESSION['tenkh'] = $user['TenKH'];
+        
+        // Redirect to the homepage
+        header("Location: 1_TrangChu.php");
+        exit(); // Make sure to exit after the redirection
+    } else {
+        echo "Login failed. Invalid username, password, or account is locked.";
+    }}
+
     ?>
     
     <!DOCTYPE html>
@@ -72,8 +67,8 @@
   margin: 20px 0 0 0;
   font-size: 0.8em;
   border-radius: 100px;
-  background: #fff;
-  color: #fff;
+  background: #C6E2FF;
+  color: black;
 }
 
 .login input:focus {
@@ -182,9 +177,10 @@
 <div  class="col-4"></div>
 <div class="login wrap">
   <div class="h1">Login</div>
-  <input pattern="^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" placeholder="Email" id="email" name="email" type="text">
+  <form method="POST" action="">
+  <input placeholder="Username" id="username" name="username" type="text">
   <input placeholder="Password" id="password" name="password" type="password">
-  <input value="Login" class="btn" type="submit">
+  <input value="Login" class="btn" type="submit"></form>
 </div>
 </div>  
 
