@@ -81,7 +81,7 @@ nav ul li a {
 .banner-slide img {
     padding: 20px;
     margin-left: 70px;
-    border-radius: 30px;
+    border-radius: 100px;
 
     width: 90%;
     height: auto;
@@ -289,7 +289,7 @@ footer {
 }
 
 .buy-now-btn1 {
-    width: 237px; /* Kích thước chiều rộng 100% của phần tử cha */
+    width: 260px; /* Kích thước chiều rộng 100% của phần tử cha */
     height: 50px;
     padding: 10px 20px;
     margin-top: 10px; /* Khoảng cách từ nút trên xuống */

@@ -59,7 +59,8 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body>
 <header>
@@ -91,15 +92,16 @@
                 </svg>
                 <span id="user-name">User Name</span>
             </button>
-            <button class="btn-user" id="cart-button">
+            <button class="btn-user" id="cart-button" onclick="location.href='../view/1_GioHang.php'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0092E4" class="bi bi-cart2" viewBox="0 0 16 16">
                     <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
                 </svg>
             </button>
         </div>
     </header>
-    <br/><br/><br/>
+    <br/><br/><br/><br/><br/> <div class="container">
     <main>
+       
         <div class="product-details1">
         <div class="product-image1">
                 <img src="../image/sanpham/<?php echo $sanPham['ImageUrl']; ?>" alt="<?php echo $sanPham['TenSP']; ?>">
@@ -109,10 +111,15 @@
                 <p class="price1"><span style="color:red"><?php echo number_format($sanPham['GiaBan'], 0, ',', '.'); ?> VNĐ</span></p>
                 <!-- Thêm các thông tin khác của sản phẩm -->
                 <p class="description1"><?php echo $sanPham['MoTa']; ?></p>
-                <button class="add-to-cart-btn1">Add to Cart</button>
+                <div class="col-md-2">
+                    <label for="inputSoLuong" class="form-label">Số lượng</label>
+                    <input type="number" class="form-control" id="inputSoLuong">
+                </div>
+                <br>
+                <button class="add-to-cart-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>)">Add to Cart</button>
              
-                <button class="contact-link1">Contact Us</button><br>
-                <button class="buy-now-btn1">Buy Now</button>
+                <button class="contact-link1" onclick="location.href='../view/1_LienHe.php'">Contact Us</button>
+                <button class="buy-now-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>); location.href='../view/1_GioHang.php'">Buy Now</button>
 
                 
 
@@ -137,6 +144,8 @@
                     <h3><?php echo $relatedProduct['TenSP']; ?></h3>
                     <p class="price1"><?php echo number_format($relatedProduct['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
                     <!-- Add any additional information you want to display -->
+                
+                    
                 </div>
             <?php
             }
@@ -144,7 +153,7 @@
         </section>
             </div>
     </main>
-
+    </div><br/>
     <footer>
         <div class="footer-content">
             <h3>About MyShop</h3>
@@ -181,6 +190,46 @@ document.addEventListener('DOMContentLoaded', function() {
         // Đặt tên người dùng nếu có trong session
         document.getElementById('user-name').textContent = userName;
 </script>
+
+<script>
+    // Function to add product to cart with specified quantity
+    function addToCart(maSP) {
+        // Check if user is logged in
+        var isLoggedIn = <?php echo json_encode($is_logged_in); ?>;
+        // If user is not logged in, redirect to login page
+        if (!isLoggedIn) {
+            window.location.href = '../view/1_DangNhap.php';
+            return;
+        }
+
+        // If user is logged in, proceed to add product to cart
+        var maKH = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;
+        var soLuong = document.getElementById('inputSoLuong').value || 1; // Get quantity from input field, default to 1 if not provided
+
+        // Send AJAX request to server to add product to cart
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Process response from server
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    // Product added to cart successfully
+                    alert('Product added to cart!');
+                } else {
+                    // Error adding product to cart
+                    alert('Failed to add product to cart. Please try again later.');
+                }
+            }
+        };
+        xhr.open('POST', '../controller/ThemVaoGioHang_con.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send('maSP=' + maSP + '&maKH=' + maKH + '&soLuong=' + soLuong);
+    }
+</script>
+
+
+
+
 </body>
 
 </html>

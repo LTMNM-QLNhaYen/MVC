@@ -37,6 +37,12 @@
     if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search-btn'])) {
         $sanPham = $sanPhamController->findByName($_GET['search']);
     }
+
+
+    $sanPhamTrongGioHangController = new SanPham_TrongGioHang_con($db);
+
+// Lấy danh sách sản phẩm trong giỏ hàng của người dùng
+    $gioHang = $sanPhamTrongGioHangController->layDanhSachSanPhamTrongGioHang($user_id);
     
     ?>
     
@@ -54,35 +60,34 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 <style>
+.cart-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjust the column width as needed */
+    gap: 20px; /* Adjust the gap between items */
+}
 
 .cart-item {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #ccc;
-    padding: 20px 0; /* Increased padding for better spacing */
-    margin-left: 100px;
+    border: 1px solid #ccc;
+    padding: 20px;
 }
 
 .product-image img {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 5px;
-    margin-right: 20px; /* Increased margin for better spacing */
 }
 
 .product-details {
-    flex-grow: 1;
+    margin-top: 10px;
+}
+
+.product-name {
+    font-weight: bold;
 }
 
 .product-price, .subtotal-price {
-    font-weight: bold;
     color: #333;
-    margin-left: 50px;
-}
-
-.quantity {
-    margin-right: 50px; /* Increased margin for better spacing */
 }
 
 .quantity-input {
@@ -91,11 +96,6 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
-    margin-left: 100px;
-}
-
-.actions {
-    margin-left: auto;
 }
 
 .remove-item-btn {
@@ -105,12 +105,12 @@
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 150px;
 }
 
 .remove-item-btn:hover {
     background-color: #cc0000;
 }
+
 
 
 </style>
@@ -148,36 +148,50 @@
                 </svg>
                 <span id="user-name">User Name</span>
             </button>
-            <button class="btn-user" id="cart-button">
+            <button class="btn-user" id="cart-button" onclick="location.href='../view/1_GioHang.php'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0092E4" class="bi bi-cart2" viewBox="0 0 16 16">
                     <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l1.25 5h8.22l1.25-5zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
                 </svg>
             </button>
         </div>
     </header>
-<br><br><br>
-    <main class="container">
+<br><br><br><br><br>
+<div class="container">
+    <main>
+        <h1>Giỏ hàng</h1><br>
+        <?php if ($gioHang): ?>
+            <div class="cart-items">
+                <?php foreach ($gioHang as $item): ?>
+                    <form method="post" action="">
+                    <div class="cart-item">
+                    <div class="product-image">
+                        <img src="../image/sanpham/<?php echo $item['ImageUrl']; ?>" alt="<?php echo $item['TenSP']; ?>">
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name"><?php echo $item['TenSP']; ?></h3>
+                        <p class="product-price">Đơn giá : <?php echo number_format($item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
+                        <div class="quantity">
+                            <input type="number" class="quantity-input" value="<?php echo $item['SoLuong']; ?>" min="1">
+                        </div>
+                        <div class="subtotal">
+                            <p class="subtotal-price">Thành tiền : <?php echo number_format($item['SoLuong'] * $item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
+                        </div>
+                        <div class="actions">
+                            <input type="hidden" class="product-id-input" value="<?php echo $item['MaSP']; ?>">
+                            <button class="remove-item-btn">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                </form>
 
-    <div class="cart-item">
-    <div class="product-image">
-        <img src="product-image.jpg" alt="Product Image">
-    </div>
-    <div class="product-details">
-        <h3 class="product-name" style=" margin-left: 50px;">Product Name</h3>
-        <p class="product-price">$20.00</p>
-    </div>
-    <div class="quantity">
-        <input type="number" class="quantity-input" value="1" min="1">
-    </div>
-    <div class="subtotal">
-        <p class="subtotal-price">$20.00</p>
-    </div>
-    <div class="actions">
-        <button class="remove-item-btn">Remove</button>
-    </div>
-</div>
-
-    </main>
+                <?php endforeach; ?>
+            </div><br><br>
+            <button class="btn btn-info">Đặt hàng</button>
+        <?php else: ?>
+            <p>Your cart is empty.</p>
+        <?php endif; ?>
+    </main> 
+</div>  <br>
 
 <!-- Hiển thị phân trang -->
 
@@ -239,7 +253,36 @@ var isLoggedIn = <?php echo json_encode($is_logged_in); ?>;
         // Đặt tên người dùng nếu có trong session
         document.getElementById('user-name').textContent = userName;
 </script>
+<script>
+    // Thêm sự kiện click vào nút "Remove"
+document.querySelectorAll('.remove-item-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var productId = this.parentElement.querySelector('.product-id-input').value; // Lấy ID sản phẩm từ thẻ input ẩn
+        var userId = <?php echo json_encode($user_id); ?>; // Lấy mã khách hàng từ biến session
+        // Gửi request POST đến server để xoá sản phẩm
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '../controller/remove_from_cart.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Nếu request thành công, reload lại trang để cập nhật giỏ hàng
+                window.location.reload();
+            } else {
+                // Xử lý lỗi nếu có
+                console.error('Error:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            // Xử lý lỗi kết nối
+            console.error('Request failed');
+        };
+        // Gửi ID sản phẩm và mã khách hàng cần xoá
+        xhr.send('product_id=' + productId + '&user_id=' + userId);
+    });
+});
 
+
+</script>
 </body>
 </html>
 
