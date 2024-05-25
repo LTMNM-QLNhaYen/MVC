@@ -1,5 +1,5 @@
 <?php
-include_once 'model/LoaiSanPham.php';
+include_once '../model/LoaiSanPham.php';
 
 class LoaiSanPhamController {
     private $model;
