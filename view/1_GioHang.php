@@ -45,26 +45,30 @@
     $gioHang = $sanPhamTrongGioHangController->layDanhSachSanPhamTrongGioHang($user_id);
     
 
-    //if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['DatHang-btn'])) {
-        // Thêm thông tin đơn hàng vào bảng HoaDon
-      //  $soLuong = $_POST['SoLuong'];
-       
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['DatHang-btn'])) {
+        $soLuong = $_POST['SoLuong'];
         
-       // $chiTietHoaDonController = new ChiTietHoaDonController($db);
-       // foreach ($gioHang as $item) {
-        //    $sanPhamTrongGioHangController->updateGioHang();
-       // }
+        if (!$user_id) {
+            echo "Bạn cần đăng nhập để thực hiện chức năng này.";
+            exit;
+        }
     
-       
-    //}
-
-
-
-
-
-
-
+        foreach ($gioHang as $item) {
+            $sanPhamTrongGioHangController->updateGioHang($user_id, $item['MaSP'], $soLuong);
+        }
+    
+        // Điều hướng đến trang thanh toán hoặc thông báo thành công
+        header('Location: ../view/1_ThanhToan.php');
+        exit;
+    }
     ?>
+    
+
+
+
+
+
+
     
     <!DOCTYPE html>
 <html lang="en">
@@ -191,23 +195,23 @@
                         <h3 class="product-name"><?php echo $item['TenSP']; ?></h3>
                         <p class="product-price">Đơn giá : <?php echo number_format($item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
                         <div class="quantity">
-                            <input type="number" class="quantity-input" name="SoLuong" value="<?php echo $item['SoLuong']; ?>" min="1">
+                        <input type="number" class="quantity-input" name="SoLuong[<?php echo $item['MaSP']; ?>]" value="<?php echo $item['SoLuong']; ?>" min="1">
 
                         </div>
                         <div class="subtotal">
                             <p class="subtotal-price">Thành tiền : <?php echo number_format($item['SoLuong'] * $item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
                         </div>
                         <div class="actions">
-                            <input type="hidden" class="product-id-input" value="<?php echo $item['MaSP']; ?>">
+                            <input type="hidden" name="MaSP[]" class="product-id-input" value="<?php echo $item['MaSP']; ?>">
                             <button class="remove-item-btn">Remove</button>
                         </div>
                     </div>
                 </div>
-                </form>
 
                 <?php endforeach; ?>
             </div><br><br>
-            <button class="btn btn-info " name="DatHang-btn" onclick="location.href='../view/1_ThanhToan.php'">Đặt hàng</button>
+                 <button class="btn btn-info " name="DatHang-btn">Đặt hàng</button>
+</form>
         <?php else: ?>
             <p>Your cart is empty.</p>
         <?php endif; ?>

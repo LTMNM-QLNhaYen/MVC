@@ -129,9 +129,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order'])) {
                     </div>
                     <div class="col-md-6">
                         <label for="inputPhone" class="form-label">Số điện thoại</label>
-                        <input type="number" class="form-control" id="inputPhone" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
-<small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
+                        <input type="tel" class="form-control" id="inputPhone" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                        <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
                     </div>
+
+                    <script>
+                    document.getElementById('inputPhone').addEventListener('input', function (e) {
+                        const phoneInput = e.target;
+                        const phoneError = document.getElementById('phoneError');
+                        
+                        if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
+                            phoneError.style.display = 'block';
+                        } else {
+                            phoneError.style.display = 'none';
+                        }
+                    });
+                    </script>
+
                     <div class="col-md-6">
                         <label for="inputEmail" class="form-label">Email</label>
                         <input type="email" class="form-control" id="inputEmail" name="Email" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" required>

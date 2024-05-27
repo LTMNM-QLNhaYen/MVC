@@ -126,11 +126,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="DiaChi">Địa chỉ</label>
                     <input type="text" class="form-control" id="DiaChi" name="DiaChi" required>
                 </div>
-                <div class="form-group">
-                    <label for="SDT">Số điện thoại</label>
-                    <input type="number" class="form-control" id="SDT" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
-<small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
-                </div>
+                <div class="col-md-6">
+                <label for="inputPhone" class="form-label">Số điện thoại</label>
+                <input type="number" class="form-control" id="inputPhone" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
+            </div>
+
+            <script>
+            document.getElementById('inputPhone').addEventListener('input', function (e) {
+                const phoneInput = e.target;
+                const phoneError = document.getElementById('phoneError');
+                
+                if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
+                    phoneError.style.display = 'block';
+                } else {
+                    phoneError.style.display = 'none';
+                }
+            });
+            </script>
+
                 <div class="form-group">
                     <label for="UserName">Tên đăng nhập</label>
                     <input type="text" class="form-control" id="UserName" name="UserName" required>

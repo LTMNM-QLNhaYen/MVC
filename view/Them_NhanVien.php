@@ -297,10 +297,24 @@ if(isset($_POST['btn_them'])) {
                         <label for="ten" class="form-label">Họ và tên</label>
                         <input type="text" class="form-control" id="ten" name="ten">
                     </div>
-                    <div class="col-12">
-                        <label for="sdt" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="sdt" name="sdt"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
-                    </div>
+                    <div class="mb-3">
+                      <label for="sdt" class="form-label">Số điện thoại</label>
+                      <input type="number" class="form-control" id="sdt" name="sdt" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                      <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
+                  </div>
+
+                  <script>
+                  document.getElementById('sdt').addEventListener('input', function (e) {
+                      const phoneInput = e.target;
+                      const phoneError = document.getElementById('phoneError');
+                      
+                      if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
+                          phoneError.style.display = 'block';
+                      } else {
+                          phoneError.style.display = 'none';
+                      }
+                  });
+                  </script>
                     <div class="col-md-6 form-group">
                         <label for="gt" class="form-label">Giới tính</label>
                         <select id="gt" class="form-select" name="gt">

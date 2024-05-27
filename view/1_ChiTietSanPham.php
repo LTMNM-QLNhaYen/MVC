@@ -124,7 +124,7 @@
                 <button class="add-to-cart-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>)">Add to Cart</button>
              
                 <button class="contact-link1" onclick="location.href='../view/1_LienHe.php'">Contact Us</button>
-                <button class="buy-now-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>); location.href='../view/1_GioHang.php'">Buy Now</button>
+                <button class="buy-now-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>); ">Buy Now</button>
 
                 
 

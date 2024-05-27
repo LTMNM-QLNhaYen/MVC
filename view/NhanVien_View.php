@@ -641,9 +641,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" class="form-control" id="updateTenNV" name="TenNV">
           </div>
           <div class="mb-3">
-            <label for="updateSDT" class="form-label">Số điện thoại</label>
-            <input type="number" class="form-control" id="updateSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
-          </div>
+                      <label for="updateSDT" class="form-label">Số điện thoại</label>
+                      <input type="number" class="form-control" id="updateSDT" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                      <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
+                  </div>
+
+                  <script>
+                  document.getElementById('updateSDT').addEventListener('input', function (e) {
+                      const phoneInput = e.target;
+                      const phoneError = document.getElementById('phoneError');
+                      
+                      if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
+                          phoneError.style.display = 'block';
+                      } else {
+                          phoneError.style.display = 'none';
+                      }
+                  });
+                  </script>
           <div class="mb-3">
                         <label for="updateGioiTinh" class="form-label">Giới tính</label>
                         <select id="updateGioiTinh" class="form-select" name="Phai">

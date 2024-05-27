@@ -205,9 +205,24 @@ $db = null;
                         <input type="text" class="form-control" id="inputAddress" name="DiaChi" value="<?php echo $user['DiaChi']; ?>" placeholder="1234 Main St" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="inputPhone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="inputPhone" name="SDT" value="<?php echo $user['SDT']; ?>" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                        <label for="inputPhone" class="form-label">Số điện thoại</label>
+                        <input type="number" class="form-control" id="inputPhone" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                        <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
                     </div>
+
+                    <script>
+                    document.getElementById('inputPhone').addEventListener('input', function (e) {
+                        const phoneInput = e.target;
+                        const phoneError = document.getElementById('phoneError');
+                        
+                        if (phoneInput.validity.patternMismatch || phoneInput.value.length !== 10) {
+                            phoneError.style.display = 'block';
+                        } else {
+                            phoneError.style.display = 'none';
+                        }
+                    });
+                    </script>
+
                     <div class="col-md-6">
                         <label for="inputUsername" class="form-label">Username</label>
                         <input type="text" class="form-control" id="inputUsername" name="UserName" value="<?php echo $user['UserName']; ?>" required>

@@ -114,6 +114,26 @@ public function xoaGioHang($user_id) {
 }
 
 
+    public function updateGioHang($userId, $maSP, $soLuong) {
+        if (!$userId) {
+            echo "Mã khách hàng không hợp lệ.";
+            return;
+        }
+
+        try {
+            $sql = "UPDATE GioHang SET SoLuong = :SoLuong WHERE MaSP = :MaSP AND MaKH = :MaKH";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':SoLuong', $soLuong, PDO::PARAM_INT);
+            $stmt->bindParam(':MaSP', $maSP, PDO::PARAM_INT);
+            $stmt->bindParam(':MaKH', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            echo "Giỏ hàng đã được cập nhật.";
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+        }
+    
+}
 }
 
 ?>
