@@ -36,6 +36,10 @@ class DB {
   public function getConnection() {
     return $this->pdo;
   }
+
+  public function getPdo() {
+    return $this->pdo;
+}
 }
 
 // (D) DATABASE SETTINGS - CHANGE TO YOUR OWN!

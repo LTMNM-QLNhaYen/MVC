@@ -359,7 +359,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">

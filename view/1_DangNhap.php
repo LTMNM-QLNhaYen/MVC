@@ -43,129 +43,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 <style>
 
-.login {
-  width: 340px;
-  height: 400px;
-  background: #fff;
-  padding: 47px;
-  padding-bottom: 57px;
-  color: black;
-  border-radius: 17px;
-  padding-bottom: 50px;
-  font-size: 1.3em;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
 
-.login input[type="text"],
-.login input[type="password"] {
-  opacity: 1;
+.form {
+  background-color: #fff;
   display: block;
-  border: none;
-  outline: none;
-  width: 100%;
-  padding: 13px 18px;
-  margin: 20px 0 0 0;
-  font-size: 0.8em;
-  border-radius: 100px;
-  background: #C6E2FF;
-  color: black;
+  padding: 1rem;
+  max-width: 350px;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.login input:focus {
-  animation: bounce 1s;
-  -webkit-appearance: none;
-}
-
-.login input[type=submit],
-.login input[type=button],
-.h1 {
-  border: 0;
-  outline: 0;
-  width: 100%;
-  padding: 13px;
-  margin: 40px 0 0 0;
-  border-radius: 500px;
+.form-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   font-weight: 600;
-  animation: bounce2 1.6s;
+  text-align: center;
+  color: #000;
 }
 
-.h1 {
-  padding: 0;
+.input-container {
   position: relative;
-  top: -35px;
+}
+
+.input-container input, .form button {
+  outline: none;
+  border: 1px solid #e5e7eb;
+  margin: 8px 0;
+}
+
+.input-container input {
+  background-color: #fff;
+  padding: 1rem;
+  padding-right: 3rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  width: 300px;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.submit {
   display: block;
-  margin-bottom: -0px;
-  font-size: 1.3em;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  background-color: #4F46E5;
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  width: 100%;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
 }
 
-.btn {
-  background: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-  color: #fff;
-  padding: 16px !important;
+.signup-link {
+  color: #6B7280;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  text-align: center;
 }
 
-.btn:hover {
-  background: linear-gradient(144deg, #1e1e1e , 20%,#1e1e1e 50%,#1e1e1e );
-  color: rgb(255, 255, 255);
-  padding: 16px !important;
-  cursor: pointer;
-  transition: all 0.4s ease;
-}
-
-.login input[type=text] {
-  animation: bounce 1s;
-  -webkit-appearance: none;
-}
-
-.login input[type=password] {
-  animation: bounce1 1.3s;
-}
-
-.ui {
-  font-weight: bolder;
-  background: -webkit-linear-gradient(#B563FF, #535EFC, #0EC8EE);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  border-bottom: 4px solid transparent;
-  border-image: linear-gradient(0.25turn, #535EFC, #0EC8EE, #0EC8EE);
-  border-image-slice: 1;
-  display: inline;
-}
-
-@media only screen and (max-width: 600px) {
-  .login {
-    width: 70%;
-    padding: 3em;
-  }
-}
-
-@keyframes bounce {
-  0% {
-    transform: translateY(-250px);
-    opacity: 0;
-  }
-}
-
-@keyframes bounce1 {
-  0% {
-    opacity: 0;
-  }
-
-  40% {
-    transform: translateY(-100px);
-    opacity: 0;
-  }
-}
-
-@keyframes bounce2 {
-  0% {
-    opacity: 0;
-  }
-
-  70% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
+.signup-link a {
+  text-decoration: underline;
 }
 </style>
 
@@ -174,15 +115,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
  <div class="row">
-<div  class="col-4"></div>
-<div class="login wrap">
-  <div class="h1">Login</div>
-  <form method="POST" action="">
-  <input placeholder="Username" id="username" name="username" type="text">
-  <input placeholder="Password" id="password" name="password" type="password">
-  <input value="Login" class="btn" type="submit"></form>
-</div>
+<div  class="col-2"></div>
+<form class="form" method="post" style="margin-top:150px">
+       <p class="form-title">Sign in to your account</p>
+      
+        <div class="input-container">
+          <input type="user" name="username" placeholder="Enter usename">
+          <span>
+          </span>
+      </div>
+      <div class="input-container">
+          <input type="password" name="password" placeholder="Enter password">
+        </div>
+         <button type="submit" name="btn" class="submit">
+         Sign in
+      </button>
+
+      <p class="signup-link">
+        No account?
+        <a href="../view/1_DangKyTaiKhoan.php">Sign up</a>
+      </p>
+   </form>
+   <div  class="col-2"></div>
+<div class="col-5">
+  <br><br><br>
+            <img src="../image/welcome.gif" style="width: 400px; height:400px;">
+        </div>
 </div>  
+
+
+
 
 
 

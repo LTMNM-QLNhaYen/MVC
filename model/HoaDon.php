@@ -6,7 +6,6 @@ class HoaDon {
     public $MaHD;
     public $MaKH;
     public $NgayLapHD;
-    public $SoHoaDon;
     public $TenNguoiNhan;
     public $DiaChi;
     public $SDT;
@@ -23,11 +22,10 @@ class HoaDon {
     
     
     public function create() {
-        $sql = "INSERT INTO HoaDon (MaKH, NgayLapHD, SoHoaDon, TenNguoiNhan, DiaChi, SDT, Email, ThanhTien, GhiChu, TrangThai, TrangThaiDonHang) VALUES (:MaKH, :NgayLapHD, :SoHoaDon, :TenNguoiNhan, :DiaChi, :SDT, :Email, :ThanhTien, :GhiChu, :TrangThai, :TrangThaiDonHang)";
+        $sql = "INSERT INTO HoaDon (MaKH, NgayLapHD, TenNguoiNhan, DiaChi, SDT, Email, ThanhTien, GhiChu, TrangThai, TrangThaiDonHang) VALUES (:MaKH, :NgayLapHD, :SoHoaDon, :TenNguoiNhan, :DiaChi, :SDT, :Email, :ThanhTien, :GhiChu, :TrangThai, :TrangThaiDonHang)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaKH', $this->MaKH);
         $stmt->bindParam(':NgayLapHD', $this->NgayLapHD);
-        $stmt->bindParam(':SoHoaDon', $this->SoHoaDon);
         $stmt->bindParam(':TenNguoiNhan', $this->TenNguoiNhan);
         $stmt->bindParam(':DiaChi', $this->DiaChi);
         $stmt->bindParam(':SDT', $this->SDT);
@@ -57,7 +55,6 @@ class HoaDon {
         if ($row) {
             $this->MaKH = $row['MaKH'];
             $this->NgayLapHD = $row['NgayLapHD'];
-            $this->SoHoaDon = $row['SoHoaDon'];
             $this->TenNguoiNhan = $row['TenNguoiNhan'];
             $this->DiaChi = $row['DiaChi'];
             $this->SDT = $row['SDT'];
@@ -70,12 +67,11 @@ class HoaDon {
     }
 
     public function update() {
-        $sql = "UPDATE HoaDon SET MaKH = :MaKH, NgayLapHD = :NgayLapHD, SoHoaDon = :SoHoaDon, TenNguoiNhan = :TenNguoiNhan, DiaChi = :DiaChi, SDT = :SDT, Email = :Email, ThanhTien = :ThanhTien, GhiChu = :GhiChu, TrangThai = :TrangThai, TrangThaiDonHang = :TrangThaiDonHang WHERE MaHD = :MaHD";
+        $sql = "UPDATE HoaDon SET MaKH = :MaKH, NgayLapHD = :NgayLapHD, TenNguoiNhan = :TenNguoiNhan, DiaChi = :DiaChi, SDT = :SDT, Email = :Email, ThanhTien = :ThanhTien, GhiChu = :GhiChu, TrangThai = :TrangThai, TrangThaiDonHang = :TrangThaiDonHang WHERE MaHD = :MaHD";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':MaHD', $this->MaHD);
         $stmt->bindParam(':MaKH', $this->MaKH);
         $stmt->bindParam(':NgayLapHD', $this->NgayLapHD);
-        $stmt->bindParam(':SoHoaDon', $this->SoHoaDon);
         $stmt->bindParam(':TenNguoiNhan', $this->TenNguoiNhan);
         $stmt->bindParam(':DiaChi', $this->DiaChi);
         $stmt->bindParam(':SDT', $this->SDT);

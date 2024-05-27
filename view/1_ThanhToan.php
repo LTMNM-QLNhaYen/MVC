@@ -9,6 +9,7 @@ $is_logged_in = $user_id !== null;
 include_once '../model/DB.php';
 include_once '../controller/SanPham_TrongGioHang_con.php';
 include_once '../controller/HoaDon_con.php';
+include_once '../controller/ChiTietHoaDon_con.php';
 
 $db = new DB();
 
@@ -22,7 +23,8 @@ $gioHang = $sanPhamTrongGioHangController->layDanhSachSanPhamTrongGioHang1($user
 // Khởi tạo biến tổng tiền
 $total_amount = 0;
 
-// Xử lý khi người dùng đặt hàng
+// Kiểm tra giá trị của $total_amount trước khi tính tổng tiền
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order'])) {
     // Thêm thông tin đơn hàng vào bảng HoaDon
     $tenNguoiNhan = $_POST['TenNguoiNhan'];
@@ -30,17 +32,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order'])) {
     $sdt = $_POST['SDT'];
     $email = $_POST['Email'];
     $ghiChu = $_POST['GhiChu'];
-    $thanhTien = $_POST['ThanhTien'];
+    
+    // Tính lại tổng tiền
+    foreach ($gioHang as $item) {
+        $total_amount += $item['SoLuong'] * $item['GiaBan'];
+    }
+    $thanhTien = $total_amount; // tổng tiền đã được tính toán
 
-    $hoaDonController->themHoaDon($user_id, $tenNguoiNhan, $diaChi, $sdt, $email, $thanhTien, $ghiChu);
+    // Thêm hóa đơn và lấy ID của hóa đơn vừa thêm
+    $maHD = $hoaDonController->themHoaDon($user_id, $tenNguoiNhan, $diaChi, $sdt, $email, $thanhTien, $ghiChu);
 
-    // Sau khi đặt hàng, bạn có thể thực hiện các thao tác khác như cập nhật số lượng sản phẩm trong kho, gửi email xác nhận đơn hàng, vv.
-    // Đối với mục đích minh họa, chúng ta sẽ xoá giỏ hàng của người dùng sau khi đặt hàng thành công
+    // Thêm sản phẩm vào chi tiết hóa đơn
+    $chiTietHoaDonController = new ChiTietHoaDonController($db);
+    foreach ($gioHang as $item) {
+        $chiTietHoaDonController->themChiTietHoaDon($maHD, $item['MaSP'], $item['SoLuong'], $item['GiaBan'], $item['SoLuong'] * $item['GiaBan']);
+    }
+
+    // Xóa giỏ hàng sau khi đặt hàng thành công
     $sanPhamTrongGioHangController->xoaGioHang($user_id);
 
     // Redirect hoặc thông báo đặt hàng thành công
-    // header('Location: order_success.php');
-    // exit;
+    header('Location: 1_order_success.php');
+    exit;
 }
 
 ?>
@@ -105,22 +118,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order'])) {
             </div>
             <div class="col-10">
                 <h2>Thông tin đặt hàng</h2>
-                <form class="row g-3" action="../view/1_ThongTinCaNhan.php" method="POST">
+                <form class="row g-3" action="" method="POST">
                     <div class="col-md-6">
-                        <label for="inputName" class="form-label">Name</label>
+                        <label for="inputName" class="form-label">Tên người nhận</label>
                         <input type="text" class="form-control" id="inputName" name="TenNguoiNhan" required>
                     </div>
                     <div class="col-12">
-                        <label for="inputAddress" class="form-label">Address</label>
+                        <label for="inputAddress" class="form-label">Địa chỉ giao hàng</label>
                         <input type="text" class="form-control" id="inputAddress" name="DiaChi" placeholder="1234 Main St" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="inputPhone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="inputPhone" name="SDT" required>
+                        <label for="inputPhone" class="form-label">Số điện thoại</label>
+                        <input type="number" class="form-control" id="inputPhone" name="SDT" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+<small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
                     </div>
                     <div class="col-md-6">
                         <label for="inputEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="inputEmail" name="Email" required>
+                        <input type="email" class="form-control" id="inputEmail" name="Email" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" required>
                     </div>
                     <div class="col-12">
                         <label for="inputNote" class="form-label">Ghi chú</label>
@@ -193,5 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order'])) {
         // Đặt tên người dùng nếu có trong session
         document.getElementById('user-name').textContent = userName;
 </script>
+
+
+
 </body>
 </html>

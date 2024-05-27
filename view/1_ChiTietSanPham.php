@@ -34,7 +34,7 @@
     $sanPham = $sanPhamController->readPerPage($start, $limit);
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['search-btn'])) {
-        $sanPham = $sanPhamController->findByName($_GET['search']);
+        $sanPham = $sanPhamController->searchByName($_GET['search']);
     }
     
     $MaSP = $_GET['MaSP']; // Lấy MaSP từ URL
@@ -110,10 +110,15 @@
                 <h1><?php echo $sanPham['TenSP']; ?></h1>
                 <p class="price1"><span style="color:red"><?php echo number_format($sanPham['GiaBan'], 0, ',', '.'); ?> VNĐ</span></p>
                 <!-- Thêm các thông tin khác của sản phẩm -->
+                <p class="description1">Tình trạng : <span style="color:#000080	"><?php echo $sanPham['TinhTrang']; ?></span></p>
+                <p class="description1">Số lượng còn lại : <span style="color:#000080	"><?php echo $sanPham['TonKho']; ?></span></p>
+
                 <p class="description1"><?php echo $sanPham['MoTa']; ?></p>
                 <div class="col-md-2">
                     <label for="inputSoLuong" class="form-label">Số lượng</label>
-                    <input type="number" class="form-control" id="inputSoLuong">
+                    <input type="number" class="form-control" id="inputSoLuong" min="1">
+                    <small id="quantityError" style="color: red; display: none;">Số lượng không hợp lệ.</small>
+
                 </div>
                 <br>
                 <button class="add-to-cart-btn1" onclick="addToCart(<?php echo $sanPham['MaSP']; ?>)">Add to Cart</button>
@@ -201,6 +206,16 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '../view/1_DangNhap.php';
             return;
         }
+
+        var inputSoLuong = document.getElementById("inputSoLuong");
+        var quantityError = document.getElementById("quantityError");
+
+        if (inputSoLuong.value <= 0 || inputSoLuong.value > <?php echo $sanPham['TonKho']; ?>) {
+            quantityError.style.display = "block";
+            return;
+        }
+
+
 
         // If user is logged in, proceed to add product to cart
         var maKH = <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>;

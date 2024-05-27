@@ -38,20 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "UPDATE KhachHang SET TenKH = ?, Phai = ?, NgaySinh = ?, DiaChi = ?, SDT = ?, UserName = ?, MatKhau = ?, Email = ? WHERE MaKH = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([$tenKH, $phai, $ngaySinh, $diaChi, $sdt, $userName, $matKhau, $email, $user_id]);
-  } else {
-    $sql = "UPDATE KhachHang SET TenKH = ?, Phai = ?, NgaySinh = ?, DiaChi = ?, SDT = ?, UserName = ?, Email = ? WHERE MaKH = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([$tenKH, $phai, $ngaySinh, $diaChi, $sdt, $userName, $email, $user_id]);
-}
+    } else {
+        $sql = "UPDATE KhachHang SET TenKH = ?, Phai = ?, NgaySinh = ?, DiaChi = ?, SDT = ?, UserName = ?, Email = ? WHERE MaKH = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$tenKH, $phai, $ngaySinh, $diaChi, $sdt, $userName, $email, $user_id]);
+    }
 
-if ($stmt->execute()) {
-    // Cập nhật thành công
-    echo "<script>alert('Thông tin đã được cập nhật thành công.');</script>";
-} else {
-    // Cập nhật thất bại
-    echo "<script>alert('Có lỗi xảy ra. Vui lòng thử lại.');</script>";
+    if ($stmt->execute()) {
+        // Cập nhật thành công
+        echo "<script>alert('Thông tin đã được cập nhật thành công.');</script>";
+    } else {
+        // Cập nhật thất bại
+        echo "<script>alert('Có lỗi xảy ra. Vui lòng thử lại.');</script>";
+    }
 }
-
 
 // Lấy thông tin đơn hàng của khách hàng từ cơ sở dữ liệu
 $sql_order = "SELECT HoaDon.*, ChiTietHoaDon.*, SanPham.TenSP
@@ -72,7 +72,13 @@ foreach ($orders_raw as $order) {
         $orders[$order_id] = [
             'MaHD' => $order['MaHD'],
             'NgayLapHD' => $order['NgayLapHD'],
-            // Add other order details here
+            'TenNguoiNhan' => $order['TenNguoiNhan'],
+            'DiaChi' => $order['DiaChi'],
+            'SDT' => $order['SDT'],
+            'Email' => $order['Email'],
+            'ThanhTien' => $order['ThanhTien'],
+            'GhiChu' => $order['GhiChu'],
+            'TrangThaiDonHang' => $order['TrangThaiDonHang'],
             'products' => []
         ];
     }
@@ -80,22 +86,15 @@ foreach ($orders_raw as $order) {
     $orders[$order_id]['products'][] = [
         'TenSP' => $order['TenSP'],
         'SoLuong' => $order['SoLuong'],
+        'GiaBan' => $order['GiaBan'],
+        'ThanhTien' => $order['ThanhTien'],
         // Add other product details here
     ];
 }
 
+// Đóng kết nối cơ sở dữ liệu
+$db = null;
 
-}
-
-
-// Lấy thông tin đơn hàng của khách hàng từ cơ sở dữ liệu
-$sql_order = "SELECT * FROM HoaDon WHERE MaKH = :MaKH";
-$stmt_order = $db->prepare($sql_order);
-$stmt_order->bindParam(':MaKH', $user_id, PDO::PARAM_INT);
-$stmt_order->execute();
-$orders = $stmt_order->fetchAll(PDO::FETCH_ASSOC);
-
-$db=null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -108,7 +107,8 @@ $db=null;
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <style>
+
+   <style>
         .card {
             width: 190px;
             height: 254px;
@@ -164,7 +164,10 @@ $db=null;
     </style>
 </head>
 <body>
-    <header></header>
+    <header>
+   
+
+</header>
     <div class="container">
         <br><br>
         <div class="row">
@@ -203,7 +206,7 @@ $db=null;
                     </div>
                     <div class="col-md-6">
                         <label for="inputPhone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="inputPhone" name="SDT" value="<?php echo $user['SDT']; ?>" required>
+                        <input type="text" class="form-control" id="inputPhone" name="SDT" value="<?php echo $user['SDT']; ?>" pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
                     </div>
                     <div class="col-md-6">
                         <label for="inputUsername" class="form-label">Username</label>
@@ -211,11 +214,12 @@ $db=null;
                     </div>
                     <div class="col-md-6">
                         <label for="inputEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="inputEmail" name="Email" value="<?php echo $user['Email']; ?>" required>
+                        <input type="email" class="form-control" id="inputEmail" name="Email" value="<?php echo $user['Email']; ?>" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" required>
                     </div>
                     <div class="col-md-6">
                         <label for="inputPassword" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="inputPassword" name="MatKhau" placeholder="Leave blank if not changing">
+                        <input type="password" class="form-control" id="inputPassword" name="MatKhau" placeholder="Leave blank if not changing" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+       title="Mật khẩu phải chứa ít nhất một ký tự đặc biệt, một số, một chữ cái in hoa và một chữ cái thường, và có ít nhất 8 ký tự." required>
                     </div>
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">Cập nhật</button>
@@ -250,7 +254,7 @@ $db=null;
                 </thead>
                 <tbody>
                 <?php foreach ($orders as $order): ?>
-    <tr>
+    <tr class="<?php echo getRowClass($order['TrangThaiDonHang']); ?>">
         <td><?php echo $order['MaHD']; ?></td>
         <td><?php echo $order['NgayLapHD']; ?></td>
         <td><?php echo $order['TenNguoiNhan']; ?></td>
@@ -260,7 +264,6 @@ $db=null;
         <td><?php echo $order['ThanhTien']; ?></td>
         <td><?php echo $order['GhiChu']; ?></td>
         <td><?php echo $order['TrangThaiDonHang']; ?></td>
-   
         <td colspan="4">
             <!-- Order details modal button -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderDetailsModal<?php echo $order['MaHD']; ?>">
@@ -291,23 +294,16 @@ $db=null;
                                 </thead>
                                 <!-- Table body -->
                                 <tbody>
-                                    <!-- Loop through each product in the order -->
-                                    <?php if (isset($order['products']) && is_array($order['products'])): ?>
-                                        <?php foreach ($order['products'] as $product): ?>
-                                            <!-- Table row for each product -->
-                                            <tr>
-                                                <!-- Product details -->
-                                                <td><?php echo $product['TenSP']; ?></td>
-                                                <td><?php echo $product['GiaBan']; ?></td>
-                                                <td><?php echo $product['SoLuong']; ?></td>
-                                                <td><?php echo $product['ThanhTien']; ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="4">No products found</td>
-                                        </tr>
-                                    <?php endif; ?>
+                                <?php foreach ($order['products'] as $product): ?>
+                                    <!-- Table row for each product -->
+                                    <tr>
+                                        <!-- Product details -->
+                                        <td><?php echo $product['TenSP']; ?></td>
+                                        <td><?php echo $product['GiaBan']; ?></td>
+                                        <td><?php echo $product['SoLuong']; ?></td>
+                                        <td><?php echo $product['ThanhTien']; ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -321,10 +317,44 @@ $db=null;
         </td>
     </tr>
 <?php endforeach; ?>
+
                         </tbody>
                     </table>
                 <?php endif; ?>
             </div>
         </div>
     </div>
+    </div>
+
+
+
 </body>
+<?php
+function getRowClass($status) {
+    switch ($status) {
+        case 'Chờ xử lý':
+            return 'table-warning'; // Màu vàng cho trạng thái Chờ xử lý
+            break;
+        case 'Đã xác nhận':
+            return 'table-info'; // Màu xanh dương cho trạng thái Đã xác nhận
+            break;
+        case 'Đang giao hàng':
+            return 'table-primary'; // Màu xanh lam cho trạng thái Đang giao hàng
+            break;
+        case 'Giao hàng thất bại':
+                return 'table-dark'; // Màu xanh lam cho trạng thái Đang giao hàng
+                break;
+        case 'Giao hàng thành công':
+            return 'table-success'; // Màu xanh lá cây cho trạng thái Hoàn thành
+            break;
+        case 'Đã hủy':
+            return 'table-danger'; // Màu đỏ cho trạng thái Đã hủy
+            break;
+        default:
+            return 'table-danger'; // Trường hợp khác không áp dụng class
+            break;
+    }
+}
+?>
+
+</html>

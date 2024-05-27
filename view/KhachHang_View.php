@@ -513,7 +513,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -581,7 +581,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="addSDT" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="addSDT" name="SDT">
+                        <input type="text" class="form-control" id="addSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
+                        <small id="phoneError" style="color: red; display: none;">Số điện thoại không hợp lệ.</small>
                     </div>
                     <div class="mb-3">
                         <label for="addUserName" class="form-label">UserName</label>
@@ -589,11 +590,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="addMatKhau" class="form-label">Mật Khẩu</label>
-                        <input type="password" class="form-control" id="addMatKhau" name="MatKhau">
+                        <input type="password" class="form-control" id="addMatKhau" name="MatKhau"pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+       title="Mật khẩu phải chứa ít nhất một ký tự đặc biệt, một số, một chữ cái in hoa và một chữ cái thường, và có ít nhất 8 ký tự." required>
                     </div>
                     <div class="mb-3">
                         <label for="addEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="addEmail" name="Email">
+                        <input type="email" class="form-control" id="addEmail" name="Email" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" required >
                     </div>
                     <div class="mb-3">
                         <label for="addTrangThai" class="form-label">Trạng Thái</label>
@@ -717,7 +719,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="updateSDT" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="updateSDT" name="SDT">
+                        <input type="text" class="form-control" id="updateSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
                     </div>
                     <div class="mb-3">
                         <label for="updateUserName" class="form-label">UserName</label>
@@ -725,11 +727,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
                     </div>
                     <div class="mb-3">
                         <label for="updateMatKhau" class="form-label">Mật Khẩu</label>
-                        <input type="password" class="form-control" id="updateMatKhau" name="MatKhau">
+                        <input type="password" class="form-control" id="updateMatKhau" name="MatKhau"pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+       title="Mật khẩu phải chứa ít nhất một ký tự đặc biệt, một số, một chữ cái in hoa và một chữ cái thường, và có ít nhất 8 ký tự." required>
                     </div>
                     <div class="mb-3">
                         <label for="updateEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="updateEmail" name="Email">
+                        <input type="email" class="form-control" id="updateEmail" name="Email"pattern="[a-zA-Z0-9._%+-]+@gmail\.com" required >
                     </div>
                     <div class="mb-3">
                         <label for="updateTrangThai" class="form-label">Trạng Thái</label>

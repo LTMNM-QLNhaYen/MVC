@@ -106,6 +106,13 @@ public function layDanhSachSanPhamTrongGioHang1($maKH) {
     $result = $this->db->select($sql, $params);
     return $result;
 }
+public function xoaGioHang($user_id) {
+    $sql = "DELETE FROM sanpham_tronggiohang WHERE MaKH = :MaKH";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bindParam(':MaKH', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+}
+
 
 }
 

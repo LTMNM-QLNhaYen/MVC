@@ -469,8 +469,8 @@ if (isset($_POST['btn_them'])) {
                                           <h5 class="card-title"><?php echo $product_pd['TenSP']; ?></h5>
                                           <p class="card-text">Đơn vị tính: <span style="color: red;"><?php echo $product_pd['DonViTinh']; ?></span></p>
                                           <input type="hidden" name="txt_masp[]" value="<?php echo $product_pd['MaSanPham']; ?>">
-                                          <input class="form-control" type="number" name="txt_soluong[]" placeholder="Số lượng nhập">
-                                          <input class="form-control" type="number" name="txt_gia[]" placeholder="Đơn giá">
+                                          <input class="form-control" type="number" name="txt_soluong[]" min="0" placeholder="Số lượng nhập" required>
+                                          <input class="form-control" type="number" name="txt_gia[]" min="0" placeholder="Đơn giá" required>
                                       </div>
                                   </div>
                               <?php } ?>

@@ -495,7 +495,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -548,7 +548,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
           </div>
           <div class="mb-3">
             <label for="addMatKhau" class="form-label">Mật Khẩu</label>
-            <input type="password" class="form-control" id="addMatKhau" name="MatKhau">
+            <input type="password" class="form-control" id="addMatKhau" name="MatKhau"pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+       title="Mật khẩu phải chứa ít nhất một ký tự đặc biệt, một số, một chữ cái in hoa và một chữ cái thường, và có ít nhất 8 ký tự." required>
           </div>
           <div class="mb-3">
           <label for="addMaNV" class="form-label">Nhân viên</label>
@@ -660,7 +661,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
           </div>
           <div class="mb-3">
             <label for="updateMatKhau" class="form-label">Mật Khẩu</label>
-            <input type="password" class="form-control" id="updateMatKhau" name="MatKhau">
+            <input type="password" class="form-control" id="updateMatKhau" name="MatKhau"pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+       title="Mật khẩu phải chứa ít nhất một ký tự đặc biệt, một số, một chữ cái in hoa và một chữ cái thường, và có ít nhất 8 ký tự." required>
           </div>
           <div class="mb-3">
           <label for="updateMaNV" class="form-label">Nhân viên</label>

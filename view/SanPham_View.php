@@ -23,24 +23,78 @@ $accountInfo = $taiKhoanNVController->getAccountInfo($UserName);
 
 // Add new product
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add-product-btn'])) {
-    if (isset($_POST['TenSP']) && isset($_POST['DonViTinh']) && isset($_POST['GiaBan']) && isset($_POST['GiaNhap']) && isset($_POST['TinhTrang']) && isset($_POST['MoTa']) && isset($_POST['ThongTin']) && isset($_POST['ImageUrl']) && isset($_POST['MaLoai']) && isset($_POST['TonKho'])) {
-        $data = [
-            'TenSP' => $_POST['TenSP'],
-            'DonViTinh' => $_POST['DonViTinh'],
-            'GiaBan' => $_POST['GiaBan'],
-            'GiaNhap' => $_POST['GiaNhap'],
-            'TinhTrang' => $_POST['TinhTrang'],
-            'MoTa' => $_POST['MoTa'],
-            'ThongTin' => $_POST['ThongTin'],
-            'ImageUrl' => $_POST['ImageUrl'],
-            'MaLoai' => $_POST['MaLoai'],
-            'TonKho' => $_POST['TonKho']
-        ];
-        $sanPhamController->create($data);
+  if (
+    isset($_POST['TenSP']) && isset($_POST['DonViTinh']) && isset($_POST['GiaBan']) &&
+    isset($_POST['GiaNhap']) && isset($_POST['TinhTrang']) && isset($_POST['MoTa']) &&
+    isset($_POST['ThongTin']) && isset($_POST['MaLoai']) && isset($_POST['TonKho'])
+) {
+    // Process file upload logic
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = '../image/sanpham/';
+        $uploadFile = $uploadDir . basename($_FILES['image']['name']);
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
+            echo "File is valid, and was successfully uploaded.\n";
+            $imageUrl = basename($_FILES['image']['name']); // Set the image URL after successful upload
+        } else {
+            echo "Upload failed";
+        }
+    } else {
+        echo "Vui lòng chọn một hình ảnh.";
+    }
+
+    // Continue with database insertion logic only if all required fields are set and image upload is successful
+    if (isset($imageUrl)) {
+        
+      
+      $tenSP = $_POST['TenSP'];
+      $donViTinh = $_POST['DonViTinh'];
+      $giaBan = $_POST['GiaBan'];
+      $giaNhap = $_POST['GiaNhap'];
+      $tinhTrang = $_POST['TinhTrang'];
+      $moTa = $_POST['MoTa'];
+      $thongTin = $_POST['ThongTin'];
+      $Url = $imageUrl;
+      $maLoai = $_POST['MaLoai'];
+      $tonKho = $_POST['TonKho'];
+      $maHSX = $_POST['MaHSX']; // Manufacturer ID
+      $sql_check_existing = "SELECT COUNT(*) FROM SanPham WHERE TenSP = :TenSP";
+      $stmt_check_existing = $db->prepare($sql_check_existing);
+      $stmt_check_existing->bindParam(':TenSP', $tenSP);
+      $stmt_check_existing->execute();
+      $count = $stmt_check_existing->fetchColumn();
+      
+      if ($count > 0) {
+          echo "Product with the same name already exists.";
+      } else {
+      // Insert into the SanPham table to get the generated MaSP
+      $sql_insert_product = "INSERT INTO SanPham (TenSP, DonViTinh, GiaBan, GiaNhap, TinhTrang, MoTa, ThongTin, ImageUrl, MaLoai, TonKho) VALUES (:TenSP, :DonViTinh, :GiaBan, :GiaNhap, :TinhTrang, :MoTa, :ThongTin, :ImageUrl, :MaLoai, :TonKho)";
+      $stmt_insert_product = $db->prepare($sql_insert_product);
+      $stmt_insert_product->bindParam(':TenSP', $tenSP);
+      $stmt_insert_product->bindParam(':DonViTinh', $donViTinh);
+      $stmt_insert_product->bindParam(':GiaBan', $giaBan);
+      $stmt_insert_product->bindParam(':GiaNhap', $giaNhap);
+      $stmt_insert_product->bindParam(':TinhTrang', $tinhTrang);
+      $stmt_insert_product->bindParam(':MoTa', $moTa);
+      $stmt_insert_product->bindParam(':ThongTin', $thongTin);
+      $stmt_insert_product->bindParam(':ImageUrl', $Url);
+      $stmt_insert_product->bindParam(':MaLoai', $maLoai);
+      $stmt_insert_product->bindParam(':TonKho', $tonKho);
+      $stmt_insert_product->execute();
+
+      // Retrieve the generated MaSP
+      $maSP = $db->getPdo()->lastInsertId();
+
+      // Insert into the ChiTiet_SanPham_HangSanXuat table
+      $sql_insert_relationship = "INSERT INTO ChiTiet_SanPham_HangSanXuat (MaSP, MaHSX) VALUES (:MaSP, :MaHSX)";
+      $stmt_insert_relationship = $db->prepare($sql_insert_relationship);
+      $stmt_insert_relationship->bindParam(':MaSP', $maSP);
+      $stmt_insert_relationship->bindParam(':MaHSX', $maHSX);
+      $stmt_insert_relationship->execute();
+      }
     } else {
         echo "Vui lòng điền đầy đủ thông tin!";
     }
-}
+}}
 
 // Fetch all products
 $sanPham = $sanPhamController->read();
@@ -105,6 +159,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort-product'])) {
         $sanPham = $sanPhamController->getAllDescending();
     }
 }
+
+
+$sql_hsx = "SELECT MaHSX, TenHSX FROM HangSanXuat";
+$stmt_hsx = $db->prepare($sql_hsx);
+$stmt_hsx->execute();
+    // Fetch the results into an array
+$hsxs = $stmt_hsx->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!doctype html>
@@ -585,7 +647,7 @@ svg {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -648,7 +710,7 @@ svg {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="addTenSP" class="form-label">Tên sản phẩm</label>
                                 <input type="text" class="form-control" id="addTenSP" name="TenSP" required>
@@ -659,16 +721,21 @@ svg {
                             </div>
                             <div class="mb-3">
                                 <label for="addGiaBan" class="form-label">Giá bán</label>
-                                <input type="number" class="form-control" id="addGiaBan" name="GiaBan" required>
+                                <input type="number" class="form-control" id="addGiaBan" min="1" name="GiaBan" required>
                             </div>
                             <div class="mb-3">
                                 <label for="addGiaNhap" class="form-label">Giá nhập</label>
-                                <input type="number" class="form-control" id="addGiaNhap" name="GiaNhap" required>
+                                <input type="number" class="form-control" id="addGiaNhap" min="1" name="GiaNhap" required>
                             </div>
                             <div class="mb-3">
                                 <label for="addTinhTrang" class="form-label">Tình trạng</label>
-                                <input type="text" class="form-control" id="addTinhTrang" name="TinhTrang" required>
-                            </div>
+                                <select class="form-control" id="addTinhTrang" name="TinhTrang" required>
+                                              
+                                              <option value="Còn hàng">Còn hàng</option>';
+                                              <option value="Hết hàng">Hết hàng</option>';
+                                              
+                                         
+                                      </select>                                      </div>
                             <div class="mb-3">
                                 <label for="addMoTa" class="form-label">Mô tả</label>
                                 <textarea class="form-control" id="addMoTa" name="MoTa" required></textarea>
@@ -678,17 +745,42 @@ svg {
                                 <textarea class="form-control" id="addThongTin" name="ThongTin" required></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="addImageUrl" class="form-label">URL hình ảnh</label>
-                                <input type="text" class="form-control" id="addImageUrl" name="ImageUrl" required>
-                            </div>
+                              <label for="addImageUrl" class="form-label">Chọn hình ảnh</label>
+                              <input type="file" class="form-control" id="addImageUrl" name="image" accept="image/*" required>
+                          </div>
+
                             <div class="mb-3">
-                                <label for="addMaLoai" class="form-label">Mã loại</label>
-                                <input type="number" class="form-control" id="addMaLoai" name="MaLoai" required>
-                            </div>
+                                <label for="addMaLoai" class="form-label">Loại sản phẩm</label>
+                                <select class="form-control" id="addMaLoai" name="MaLoai" required>
+                                              
+                                                      <option value="1">Vật liệu</option>';
+                                                      <option value="2">Loa nhà yến</option>';
+                                                      <option value="3">Máy tạo ẩm</option>';
+                                                      <option value="4">Thiết bị điện</option>';
+                                                      <option value="5">Dung dịch tạo mùi</option>';
+                                                      <option value="6">Amply nhà yến</option>';
+                                                      <option value="7">Máy phun béc</option>';
+                                                 
+                                              </select>                          
+                                  </div>
                             <div class="mb-3">
                                 <label for="addTonKho" class="form-label">Tồn kho</label>
-                                <input type="number" class="form-control" id="addTonKho" name="TonKho" required>
+                                <input type="number" class="form-control" id="addTonKho" name="TonKho" min="0" required>
                             </div>
+
+                            <div class="mb-3">
+            <label for="addHSX" class="form-label">Hãng sản xuất</label>
+            <select class="form-control" id="addHSX" name="MaHSX" required>
+                                              
+            <?php
+                // Assuming you have an array of categories called $categories
+                foreach ($hsxs as $hsx) {
+                    echo '<option value="' . $hsx['MaHSX'] . '">' . $hsx['TenHSX'] . '</option>';
+                }
+                ?>
+                                         
+                                      </select>          </div>
+
                             <button type="submit" name="add-product-btn" class="btn btn-primary">Thêm mới</button>
                         </form>
                     </div>
@@ -701,7 +793,7 @@ svg {
             <?php foreach ($sanPham as $sp) : ?>
                 <div class="col-md-3">
                     <div class="card">
-                        <img class="card-img" src="../image/sanpham/toyen.jpg" class="card-img-top" alt="<?php echo $sp['TenSP']; ?>">
+                        <img class="card-img" src="../image/sanpham/<?php echo $sp['ImageUrl']; ?>" class="card-img-top" alt="<?php echo $sp['TenSP']; ?>">
                         <div class="card-body">
                             <h5 class="card-title"><?php echo $sp['TenSP']; ?></h5>
                             <p class="card-text"><strong>Mã loại:</strong> <?php echo $sp['MaLoai']; ?></p>
@@ -763,15 +855,21 @@ svg {
           </div>
           <div class="mb-3">
             <label for="updateGiaBan" class="form-label">Giá bán</label>
-            <input type="number" class="form-control" id="updateGiaBan" name="GiaBan" required>
+            <input type="number" class="form-control" id="updateGiaBan" min="1" name="GiaBan" required>
           </div>
           <div class="mb-3">
             <label for="updateGiaNhap" class="form-label">Giá nhập</label>
-            <input type="number" class="form-control" id="updateGiaNhap" name="GiaNhap" required>
+            <input type="number" class="form-control" id="updateGiaNhap" name="GiaNhap" min="1" required>
           </div>
           <div class="mb-3">
             <label for="updateTinhTrang" class="form-label">Tình trạng</label>
-            <input type="text" class="form-control" id="updateTinhTrang" name="TinhTrang" required>
+            <select class="form-control" id="updateTinhTrang" name="TinhTrang" required>
+                                              
+                                              <option value="Còn hàng">Còn hàng</option>';
+                                              <option value="Hết hàng">Hết hàng</option>';
+                                              
+                                         
+                                      </select>  
           </div>
           <div class="mb-3">
             <label for="updateMoTa" class="form-label">Mô tả</label>
@@ -783,16 +881,28 @@ svg {
           </div>
           <div class="mb-3">
             <label for="updateImageUrl" class="form-label">URL hình ảnh</label>
-            <input type="text" class="form-control" id="updateImageUrl" name="ImageUrl" required>
+            <input type="text" class="form-control" id="updateImageUrl" name="ImageUrl"readonly required>
           </div>
           <div class="mb-3">
             <label for="updateMaLoai" class="form-label">Mã loại</label>
-            <input type="number" class="form-control" id="updateMaLoai" name="MaLoai" required>
-          </div>
+            <select class="form-control" id="updateMaLoai" name="MaLoai" required>
+                                              
+                                              <option value="1">Vật liệu</option>';
+                                              <option value="2">Loa nhà yến</option>';
+                                              <option value="3">Máy tạo ẩm</option>';
+                                              <option value="4">Thiết bị điện</option>';
+                                              <option value="5">Dung dịch tạo mùi</option>';
+                                              <option value="6">Amply nhà yến</option>';
+                                              <option value="7">Máy phun béc</option>';
+                                         
+                                      </select>          </div>
           <div class="mb-3">
             <label for="updateTonKho" class="form-label">Tồn kho</label>
-            <input type="number" class="form-control" id="updateTonKho" name="TonKho" required>
+            <input type="number" class="form-control" id="updateTonKho" name="TonKho" min="0" required>
           </div>
+
+          
+
           <button type="submit" class="btn btn-primary" name="update-btn">Cập nhật</button>
         </form>
       </div>

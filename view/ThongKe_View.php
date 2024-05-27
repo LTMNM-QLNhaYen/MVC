@@ -310,7 +310,7 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
 
      <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
@@ -357,7 +357,7 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
             <div class="card-details">
                 <img src="../image/money.gif" style="height: 64px; width: 64px;margin-left: 32px">
                 <p class="text-title">Doanh thu</p>
-                <p class="text-body"><b><?php  echo $totalThanhTien; ?> đ</b></p>
+                <p class="text-body"><b><?php echo number_format($totalThanhTien, 0, ',', '.'); ?> VNĐ</b></p>
             </div>
             <button type="button" class="card-button" onclick="window.location.href='../view/HoaDon_View.php'">More info</button>
         </div> 

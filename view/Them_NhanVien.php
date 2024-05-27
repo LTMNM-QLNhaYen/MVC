@@ -299,7 +299,7 @@ if(isset($_POST['btn_them'])) {
                     </div>
                     <div class="col-12">
                         <label for="sdt" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="sdt" name="sdt">
+                        <input type="text" class="form-control" id="sdt" name="sdt"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
                     </div>
                     <div class="col-md-6 form-group">
                         <label for="gt" class="form-label">Giới tính</label>

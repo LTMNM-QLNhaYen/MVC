@@ -44,6 +44,26 @@
 // Lấy danh sách sản phẩm trong giỏ hàng của người dùng
     $gioHang = $sanPhamTrongGioHangController->layDanhSachSanPhamTrongGioHang($user_id);
     
+
+    //if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['DatHang-btn'])) {
+        // Thêm thông tin đơn hàng vào bảng HoaDon
+      //  $soLuong = $_POST['SoLuong'];
+       
+        
+       // $chiTietHoaDonController = new ChiTietHoaDonController($db);
+       // foreach ($gioHang as $item) {
+        //    $sanPhamTrongGioHangController->updateGioHang();
+       // }
+    
+       
+    //}
+
+
+
+
+
+
+
     ?>
     
     <!DOCTYPE html>
@@ -171,7 +191,8 @@
                         <h3 class="product-name"><?php echo $item['TenSP']; ?></h3>
                         <p class="product-price">Đơn giá : <?php echo number_format($item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
                         <div class="quantity">
-                            <input type="number" class="quantity-input" value="<?php echo $item['SoLuong']; ?>" min="1">
+                            <input type="number" class="quantity-input" name="SoLuong" value="<?php echo $item['SoLuong']; ?>" min="1">
+
                         </div>
                         <div class="subtotal">
                             <p class="subtotal-price">Thành tiền : <?php echo number_format($item['SoLuong'] * $item['GiaBan'], 0, ',', '.'); ?> VNĐ</p>
@@ -186,7 +207,7 @@
 
                 <?php endforeach; ?>
             </div><br><br>
-            <button class="btn btn-info">Đặt hàng</button>
+            <button class="btn btn-info " name="DatHang-btn" onclick="location.href='../view/1_ThanhToan.php'">Đặt hàng</button>
         <?php else: ?>
             <p>Your cart is empty.</p>
         <?php endif; ?>

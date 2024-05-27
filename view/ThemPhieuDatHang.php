@@ -281,7 +281,7 @@ if (isset($_POST['btn_them'])) {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br><br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -313,7 +313,7 @@ if (isset($_POST['btn_them'])) {
 
     </div>
 
-          
+         
   <div class="container mt-5">
     <h4>Thêm phiếu đặt hàng</h4>
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" enctype="multipart/form-data" name="add_PD">
@@ -350,7 +350,7 @@ if (isset($_POST['btn_them'])) {
                                             <h5 class="card-title" ><?php echo $product['TenSP']; ?></h5>
                                             <p class="card-text">Đơn vị tính : <span style="color: red;"><?php echo $product['DonViTinh']; ?></span></p>
                                             <input type="hidden" name="txt_masp[]" value="<?php echo $product['MaSP']; ?>">
-                                            <input class="form-control" type="number" name="txt_soluong[]" placeholder="Số lượng đặt" >
+                                            <input class="form-control" type="number" name="txt_soluong[]" min="0" placeholder="Số lượng đặt" required>
                                         </div>
                                     </div>
                                 <?php } ?>

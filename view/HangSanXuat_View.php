@@ -31,12 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add-btn'])) {
 
     if ($result) {
         // Handle successful update
-        echo "<script>alert('Employee updated successfully');</script>";
+        echo "<script>alert('Updated successfully');</script>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } else {
         // Handle update failure
-        echo "<script>alert('Failed to update employee');</script>";
+        echo "<script>alert('Failed to update ');</script>";
     }
 }
 
@@ -51,12 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete-btn'])) {
     
     if ($result) {
         // Handle successful update
-        echo "<script>alert('Employee updated successfully');</script>";
+        echo "<script>alert('Updated successfully');</script>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } else {
         // Handle update failure
-        echo "<script>alert('Failed to update employee');</script>";
+        echo "<script>alert('Failed to update ');</script>";
     }
 }
 
@@ -74,12 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update-btn'])) {
     
     if ($result) {
         // Handle successful update
-        echo "<script>alert('Employee updated successfully');</script>";
+        echo "<script>alert(' Updated successfully');</script>";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } else {
         // Handle update failure
-        echo "<script>alert('Failed to update employee');</script>";
+        echo "<script>alert('Failed to update ');</script>";
     }
 }
 
@@ -512,7 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
 
       <div class="row">
         <div id="menu"></div>
-      </div>
+      </div> <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -570,7 +570,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
         </div>
         <div class="mb-3">
             <label for="addSDT" class="form-label">Số điện thoại</label>
-            <input type="text" class="form-control" id="addSDT" name="SDT">
+            <input type="text" class="form-control" id="addSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
         </div>
           <button type="submit" class="btn btn-primary vitri"  name="add-btn">Thêm</button>
         </form>
@@ -667,7 +667,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
         </div>
         <div class="mb-3">
             <label for="updateSDT" class="form-label">Số điện thoại</label>
-            <input type="text" class="form-control" id="updateSDT" name="SDT">
+            <input type="text" class="form-control" id="updateSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
         </div>
           <button type="submit" class="btn btn-primary" name="update-btn">Cập Nhật</button>
         </form>

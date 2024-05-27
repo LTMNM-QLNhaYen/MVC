@@ -12,31 +12,39 @@ $hoaDonController = new HoaDonController($db); // Thay đổi tên biến và cl
 $hoaDon = $hoaDonController->read();
 
 
-// Sửa hoá đơn
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update-btn'])) {
-  $data = [
-      'MaKH' => $_POST['MaKH'],
-      'NgayLapHD' => $_POST['NgayLapHD'],
-      'SoHoaDon' => $_POST['SoHoaDon'],
-      'TenNguoiNhan' => $_POST['TenNguoiNhan'],
-      'DiaChi' => $_POST['DiaChi'],
-      'SDT' => $_POST['SDT'],
-      'Email' => $_POST['Email'],
-      'ThanhTien' => $_POST['ThanhTien'],
-      'GhiChu' => $_POST['GhiChu'],
-      'TrangThai' => $_POST['TrangThai'],
-      'TrangThaiDonHang' => $_POST['TrangThaiDonHang']
-  ];
+  $maHD = $_POST['MaHD'];
+  $maKH = $_POST['MaKH'];
+  $ngayLapHD = $_POST['NgayLapHD'];
+  $tenNguoiNhan = $_POST['TenNguoiNhan'];
+  $diaChi = $_POST['DiaChi'];
+  $sdt = $_POST['SDT'];
+  $email = $_POST['Email'];
+  $thanhTien = $_POST['ThanhTien'];
+  $ghiChu = $_POST['GhiChu'];
+  $trangThai = $_POST['TrangThai'];
+  $trangThaiDonHang = $_POST['TrangThaiDonHang'];
 
-  $result = $hoaDonController->update($data);
+  // Cập nhật thông tin hoá đơn
+  $result = $hoaDonController->update([
+      'MaHD' => $maHD,
+      'MaKH' => $maKH,
+      'NgayLapHD' => $ngayLapHD,
+      'TenNguoiNhan' => $tenNguoiNhan,
+      'DiaChi' => $diaChi,
+      'SDT' => $sdt,
+      'Email' => $email,
+      'ThanhTien' => $thanhTien,
+      'GhiChu' => $ghiChu,
+      'TrangThai' => $trangThai,
+      'TrangThaiDonHang' => $trangThaiDonHang
+  ]);
 
   if ($result) {
-      // Xử lý cập nhật thành công
       echo "<script>alert('Hoá đơn cập nhật thành công');</script>";
       header("Location: " . $_SERVER['PHP_SELF']);
       exit();
   } else {
-      // Xử lý cập nhật thất bại
       echo "<script>alert('Cập nhật hoá đơn thất bại');</script>";
   }
 }
@@ -57,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['sort'])) {
 }
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xuat'])) {
   if ($_GET['xuat'] == '1') {
-    $hoaDon = $hoaDonController->getByTrangThaiDonHang('Đã xác nhận');
+    $hoaDon = $hoaDonController->getByTrangThaiDonHang('Chờ xử lý');
 
   } elseif ($_GET['xuat'] == '2') { 
     $hoaDon = $hoaDonController->getByTrangThaiDonHang('Đang giao hàng');
@@ -76,6 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
       $hoaDon = $hoaDonController->getByTrangThai(0);
   }
 }
+
+
+
+
+
+
+
 
 ?>
 
@@ -319,6 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
       <div class="row">
         <div id="menu"></div>
       </div>
+      <br> <br>
       <div class="container">
       <div class="row shadow-lg p- mb-5 bg-body-tertiary rou3nded">
         <div class="col-2">
@@ -342,7 +358,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
         <form method="get" action="">
             <button type="action" class="btn btn-sm btn-outline-secondary" name="sort" value="asc">Sắp xếp tăng dần</button> | 
             <button class="btn btn-sm btn-outline-secondary" name="sort" type="action" value="des">Sắp xếp giảm dần</button> | 
-            <button class="btn btn-sm btn-outline-secondary" name="xuat" type="action" value="1">Đã xác nhận</button> | 
+            <button class="btn btn-sm btn-outline-secondary" name="xuat" type="action" value="1">Chờ xử lý</button> | 
             <button class="btn btn-sm btn-outline-secondary" name="xuat" type="action" value="2">Đang giao hàng</button> | 
             <button class="btn btn-sm btn-outline-secondary" name="xuat" type="action" value="3">Giao hàng thành công</button> | 
             <button class="btn btn-sm btn-outline-secondary" name="xuat" type="action" value="4">Giao hàng thất bại</button> | 
@@ -359,7 +375,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
     <tr style="text-align: center;">
         <th scope="col">ID</th>
         <th scope="col">Ngày đặt</th>
-        <th scope="col">Số hóa đơn</th>
         <th scope="col">Tên người nhận</th>
         <th scope="col">Địa chỉ</th>
         <th scope="col">Số điện thoại</th>
@@ -375,7 +390,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
     <tr>
         <td style="text-align: center;"><?php echo $hd['MaHD']; ?></td>
         <td><?php echo $hd['NgayLapHD']; ?></td>
-        <td style="text-align: center;"><?php echo $hd['SoHoaDon']; ?></td>
         <td><?php echo $hd['TenNguoiNhan']; ?></td>
         <td><?php echo $hd['DiaChi']; ?></td>
         <td><?php echo $hd['SDT']; ?></td>
@@ -389,7 +403,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
                     data-id="<?php echo $hd['MaHD']; ?>" 
                     data-makh="<?php echo $hd['MaKH']; ?>" 
                     data-ngaylaphd="<?php echo $hd['NgayLapHD']; ?>" 
-                    data-sohoadon="<?php echo $hd['SoHoaDon']; ?>" 
                     data-tennguoinhan="<?php echo $hd['TenNguoiNhan']; ?>" 
                     data-diachi="<?php echo $hd['DiaChi']; ?>" 
                     data-sdt="<?php echo $hd['SDT']; ?>" 
@@ -412,7 +425,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
 
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content" style="width: 800px;height:700px">
+        <div class="modal-content" style="width: 800px;height:1200px">
             <div class="modal-header">
                 <h5 class="modal-title" id="detailModalLabel">Chi Tiết Hóa Đơn</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -424,7 +437,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
                             <p>Mã hoá đơn: <input type="text" class="form-control" id="updateMaHDModal" name="MaHD" readonly></p>
                             <p>Mã khách hàng: <input type="text" class="form-control" id="updateMaKH" name="MaKH" readonly></p>
                             <p>Ngày lập hoá đơn: <input type="text" class="form-control" id="updateNgayLapHD" name="NgayLapHD" readonly></p>
-                            <p>Số hoá đơn: <input type="text" class="form-control" id="updateSoHoaDon" name="SoHoaDon"></p>
                             <p>Tên người nhận: <input type="text" class="form-control" id="updateTenNguoiNhan" name="TenNguoiNhan"></p>
                             <p>Địa chỉ: <input type="text" class="form-control" id="updateDiaChi" name="DiaChi"></p>
                         </div>
@@ -443,8 +455,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
                             <div class="mb-3">
                                 <label for="updateTrangThaiDonHang" class="form-label">Trạng thái đơn hàng</label>
                                 <select class="form-select" id="updateTrangThaiDonHang" name="TrangThaiDonHang">
-                                    <option value="Đã xác nhận">Đã xác nhận</option>
+                                    <option value="Chờ xử lý">Chờ xử lý</option>
                                     <option value="Đang giao hàng">Đang giao hàng</option>
+                                    <option value="Chờ lấy hàng">Chờ lấy hàng</option>
+
                                     <option value="Giao hàng thành công">Giao hàng thành công</option>
                                     <option value="Giao hàng thất bại">Giao hàng thất bại</option>
                                     <option value="Đã hủy">Đã hủy</option>
@@ -452,6 +466,81 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
                             </div>
                         </div>
                     </div>
+
+                          <h2>Danh sách sản phẩm đặt hàng</h2>
+                          <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Giá</th>
+                            <th scope="col">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <?php $total_amount = 0;
+                                $maHD = $hd['MaHD'];
+
+                                // Retrieve order information along with product information
+                                $sql_order = "SELECT HoaDon.*, ChiTietHoaDon.*, SanPham.TenSP
+                                              FROM HoaDon
+                                              INNER JOIN ChiTietHoaDon ON HoaDon.MaHD = ChiTietHoaDon.MaHD
+                                              INNER JOIN SanPham ON ChiTietHoaDon.MaSP = SanPham.MaSP
+                                              WHERE HoaDon.MaHD = :MaHD";
+                                $stmt_order = $db->prepare($sql_order);
+                                $stmt_order->bindParam(':MaHD', $maHD, PDO::PARAM_INT);
+                                $stmt_order->execute();
+                                $orders_raw = $stmt_order->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                // Organize orders and their associated products into an array
+                                $orders = [];
+                                foreach ($orders_raw as $order) {
+                                    $order_id = $order['MaHD'];
+                                    if (!isset($orders[$order_id])) {
+                                        $orders[$order_id] = [
+                                            'MaHD' => $order['MaHD'],
+                                            'NgayLapHD' => $order['NgayLapHD'],
+                                            'TenNguoiNhan' => $order['TenNguoiNhan'],
+                                            'DiaChi' => $order['DiaChi'],
+                                            'SDT' => $order['SDT'],
+                                            'Email' => $order['Email'],
+                                            'ThanhTien' => $order['ThanhTien'],
+                                            'GhiChu' => $order['GhiChu'],
+                                            'TrangThaiDonHang' => $order['TrangThaiDonHang'],
+                                            'products' => []
+                                        ];
+                                    }
+                                    // Add product details to the order
+                                    $orders[$order_id]['products'][] = [
+                                        'TenSP' => $order['TenSP'],
+                                        'SoLuong' => $order['SoLuong'],
+                                        'GiaBan' => $order['GiaBan'],
+                                        'ThanhTien' => $order['ThanhTien'],
+                                        // Add other product details here
+                                    ];
+                                }
+                                
+                                // Assign the products array to the $gioHang variable
+                                $gioHang = $orders[$maHD]['products'];
+                                
+                    ?>
+                    <tbody>
+                        <?php foreach ($gioHang as $index => $item): 
+                          $total_amount += $item['SoLuong'] * $item['GiaBan'];?>
+                            <tr>
+                                <td><?php echo $index + 1; ?></td>
+                                <td><?php echo $item['TenSP']; ?></td>
+                                <td><?php echo $item['SoLuong']; ?></td>
+                                <td><?php echo number_format($item['GiaBan']); ?></td>
+                                <td><?php echo number_format($item['SoLuong'] * $item['GiaBan']); ?></td>
+                                
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+      <br> <br>        <p>Tổng tiền: <span style="color:red"><b><?php echo number_format($total_amount); ?></b></span></p>
+
+
                     <button type="submit" class="cta" name="update-btn">Cập nhật</button>
 </form>
 </div>
@@ -505,14 +594,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
       }
       loadFooter();
 
-      document.addEventListener('DOMContentLoaded', function() {
+    // Thêm sự kiện nghe cho nút cập nhật khi trang đã tải
+document.addEventListener('DOMContentLoaded', function() {
     const updateButtons = document.querySelectorAll('.update-btn');
     updateButtons.forEach(button => {
         button.addEventListener('click', function(event) {
             const maHD = this.getAttribute('data-id');
             const maKH = this.getAttribute('data-makh');
             const ngayLapHD = this.getAttribute('data-ngaylaphd');
-            const soHoaDon = this.getAttribute('data-sohoadon');
             const tenNguoiNhan = this.getAttribute('data-tennguoinhan');
             const diaChi = this.getAttribute('data-diachi');
             const sdt = this.getAttribute('data-sdt');
@@ -526,7 +615,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
             document.getElementById('updateMaHDModal').value = maHD;
             document.getElementById('updateMaKH').value = maKH;
             document.getElementById('updateNgayLapHD').value = ngayLapHD;
-            document.getElementById('updateSoHoaDon').value = soHoaDon;
             document.getElementById('updateTenNguoiNhan').value = tenNguoiNhan;
             document.getElementById('updateDiaChi').value = diaChi;
             document.getElementById('updateSDT').value = sdt;
@@ -536,12 +624,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['xn'])) {
             document.getElementById('updateTrangThai').value = trangThai;
             document.getElementById('updateTrangThaiDonHang').value = trangThaiDonHang;
             
+
+
+
             // Mở modal
             var myModal = new bootstrap.Modal(document.getElementById('detailModal'));
             myModal.show();
         });
     });
 });
+
 
 
 

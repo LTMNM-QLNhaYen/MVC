@@ -490,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="row">
         <div id="menu"></div>
-    </div>
+    </div> <br> <br>
 <div class="container">
     
 
@@ -642,7 +642,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           <div class="mb-3">
             <label for="updateSDT" class="form-label">Số điện thoại</label>
-            <input type="number" class="form-control" id="updateSDT" name="SDT">
+            <input type="number" class="form-control" id="updateSDT" name="SDT"pattern="[0-9]{10}" required title="Số điện thoại phải có 10 chữ số">
           </div>
           <div class="mb-3">
                         <label for="updateGioiTinh" class="form-label">Giới tính</label>
