@@ -36,6 +36,54 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
 
 
 
+
+
+$query = "
+    SELECT 
+        YEAR(NgayLapHD) AS Nam,
+        MONTH(NgayLapHD) AS Thang,
+        SUM(ThanhTien) AS DoanhThu,
+        SUM(ThanhTien - (SELECT SUM(GiaNhap * ct.SoLuong) 
+                         FROM ChiTietHoaDon ct 
+                         JOIN SanPham sp ON ct.MaSP = sp.MaSP 
+                         WHERE ct.MaHD = hd.MaHD)) AS LoiNhuan
+    FROM 
+        HoaDon hd
+    WHERE 
+        TrangThaiDonHang = 'Giao hàng thành công'
+    GROUP BY 
+        YEAR(NgayLapHD), MONTH(NgayLapHD)
+    ORDER BY 
+        YEAR(NgayLapHD), MONTH(NgayLapHD);
+    ";
+
+$pdo = $db->getConnection(); // Kết nối tới cơ sở dữ liệu
+
+
+$stmt = $pdo->prepare($query);
+if ($stmt->execute()) {
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (empty($data)) {
+        echo "Query executed successfully but returned no data.<br>";
+    } else {
+        echo "Data fetched successfully.<br>";
+        
+    }
+} else {
+    $errorInfo = $stmt->errorInfo();
+    echo "Query execution failed: " . $errorInfo[2] . "<br>";
+}
+
+$labels = [];
+$doanhThu = [];
+$loiNhuan = [];
+
+foreach ($data as $row) {
+    $labels[] = $row['Nam'] . '-' . str_pad($row['Thang'], 2, '0', STR_PAD_LEFT);
+    $doanhThu[] = $row['DoanhThu'];
+    $loiNhuan[] = $row['LoiNhuan'];
+}
+
 ?>
 
 
@@ -48,6 +96,8 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Quản lý thông tin khách hàng</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 <style>
@@ -382,11 +432,58 @@ $accountInfo = $taiKhoanController->getAccountInfo($UserName);
         </div>
     
 </div></div>
+
 </div>
+<br> <br>
+<div style="width: 80%; margin: auto;">
+        <canvas id="doanhThuLoiNhuanChart"></canvas>
+    </div>
+    <script>
+                    document.addEventListener('DOMContentLoaded', (event) => {
+                        const labels = <?php echo json_encode($labels); ?>;
+                        const doanhThu = <?php echo json_encode($doanhThu); ?>;
+                        const loiNhuan = <?php echo json_encode($loiNhuan); ?>;
+
+                        const ctx = document.getElementById('doanhThuLoiNhuanChart').getContext('2d');
+                        const chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: 'Doanh Thu',
+                                        data: doanhThu,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1
+                                    },
+                                    {
+                                        label: 'Lợi Nhuận',
+                                        data: loiNhuan,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 1
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+   
           
         </div>
       </div>
       </div>
+
 
       <div class="row">
         <div id="footer">
