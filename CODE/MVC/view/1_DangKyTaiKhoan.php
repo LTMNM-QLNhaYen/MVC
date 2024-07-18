@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt_insert->execute();
 
             echo "Đăng ký thành công.";
-            header("Location: ../view/1_TrangChu.php"); // Thay đổi 'index.php' thành trang chủ của bạn
+            header("Location: 1_DangNhap.php"); // Thay đổi 'index.php' thành trang chủ của bạn
             exit();
         }
     } catch (PDOException $e) {

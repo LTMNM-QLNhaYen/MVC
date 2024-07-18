@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: 1_TrangChu.php");
         exit(); // Make sure to exit after the redirection
     } else {
-        echo "Login failed. Invalid username, password, or account is locked.";
+        echo "Login failed. Invalid username, password, or account is incorrect.";
     }}
 
     ?>
@@ -126,6 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </div>
       <div class="input-container">
           <input type="password" name="password" placeholder="Enter password">
+        </div>
+        <div class="Forgot-password">
+          <a href="Forgot_password.php">Forgot password</a>
+
         </div>
          <button type="submit" name="btn" class="submit">
          Sign in
